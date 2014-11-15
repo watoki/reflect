@@ -14,6 +14,7 @@
     ],
     "require": {
         "php": ">=5.3.8",
+        "watoki/collections": "*",
         "nikic/php-parser": "1.*"
     },
     "require-dev": {
