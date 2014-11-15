@@ -6,4 +6,4 @@ php:
   - 5.3
 before_script: composer install
 script: php vendor/phpunit/phpunit/phpunit.php --log-tap report.tap
-after_script: curl -X POST --data-binary @report.tap http://dox.rtens.org/projects/watoki-factory/reports
+after_script: curl -X POST --data-binary @report.tap http://dox.rtens.org/projects/watoki-relfect/reports
