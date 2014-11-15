@@ -16,9 +16,9 @@ use watoki\reflect\type\StringType;
 use watoki\scrut\Specification;
 
 /**
- * @property \spec\watoki\qrator\fixtures\ClassFixture class <-
+ * @property \spec\watoki\reflect\fixtures\ClassFixture class <-
  */
-class DeterminePropertiesOfObjectTest extends Specification {
+class ReadInterfacePropertiesTest extends Specification {
 
     function testFindPublicProperties() {
         $this->class->givenTheClass_WithTheBody('publicProperties\SomeClass', '
@@ -255,7 +255,7 @@ class DeterminePropertiesOfObjectTest extends Specification {
         $reflection = new \ReflectionClass($class);
         $this->object = $reflection->newInstanceArgs($this->args);
         $reader = new PropertyReader($class);
-        $this->properties = $reader->readProperties($this->object);
+        $this->properties = $reader->readInterface($this->object);
     }
 
     private function thenThereShouldBe_Properties($int) {

@@ -5,57 +5,87 @@ use watoki\collections\Map;
 
 class PropertyReader {
 
+    /** @var \ReflectionClass */
     private $class;
 
     function __construct($class) {
-        $this->class = $class;
+        $this->class = new \ReflectionClass($class);
     }
 
     /**
-     * @param object|null $object If provided, dynamic (run-time) properties are read as well
+     * Derives properties from constructor, public instance variables, getters and setters.
+     *
+     * @param object|null $object If provided, dynamic (run-time) variables are read as well
      * @return \watoki\collections\Map|Property[] indexed by property name
      */
-    public function readProperties($object = null) {
+    public function readInterface($object = null) {
         $properties = new Map();
-        $reflection = new \ReflectionClass($object ? : $this->class);
 
-        $add = function (Property $property) use ($properties) {
-            if (!$properties->has($property->name())) {
-                $properties[$property->name()] = $property;
-            } else {
-                $multi = $properties[$property->name()];
-                if (!($multi instanceof property\MultiProperty)) {
-                    $multi = new property\MultiProperty($property->name());
-                    $multi->add($properties[$property->name()]);
-                    $properties[$property->name()] = $multi;
-                }
-                $multi->add($property);
-            }
-        };
-
-        if ($reflection->getConstructor()) {
-            foreach ($reflection->getConstructor()->getParameters() as $parameter) {
-                $add(new property\ConstructorProperty($reflection->getConstructor(), $parameter));
+        if ($this->class->getConstructor()) {
+            foreach ($this->class->getConstructor()->getParameters() as $parameter) {
+                $this->accumulate($properties,
+                    new property\ConstructorProperty($this->class->getConstructor(), $parameter));
             }
         }
 
-        foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            $add(new property\PublicProperty($property));
+        foreach ($this->class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            $this->accumulate($properties,
+                new property\InstanceVariableProperty($property));
         }
 
         if (is_object($object)) {
             foreach ($object as $name => $value) {
-                $add(new property\DynamicProperty($name));
+                $this->accumulate($properties,
+                    new property\DynamicProperty($name));
             }
         }
 
-        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+        foreach ($this->class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             if (property\AccessorProperty::isAccessor($method)) {
-                $add(new property\AccessorProperty($method));
+                $this->accumulate($properties,
+                    new property\AccessorProperty($method));
             }
         }
 
         return $properties;
+    }
+
+    /**
+     * @param null|int $filter Filters of ReflectionProperty::FILTER_*
+     * @return Map|Property[] indexed by name
+     */
+    public function readState($filter = null) {
+        $properties = new Map();
+        if (!$filter) {
+            $filter = \ReflectionProperty::IS_PRIVATE
+                | \ReflectionProperty::IS_PROTECTED
+                | \ReflectionProperty::IS_PUBLIC;
+        }
+
+        foreach ($this->class->getProperties($filter) as $property) {
+            if ($property->isStatic()) {
+                continue;
+            }
+
+            $this->accumulate($properties,
+                new property\InstanceVariableProperty($property));
+        }
+
+        return $properties;
+    }
+
+    private function accumulate(Map $acc, Property $property) {
+        if (!$acc->has($property->name())) {
+            $acc->set($property->name(), $property);
+        } else {
+            $multi = $acc->get($property->name());
+            if (!($multi instanceof property\MultiProperty)) {
+                $multi = new property\MultiProperty($property->name());
+                $multi->add($acc->get($property->name()));
+                $acc->set($property->name(), $multi);
+            }
+            $multi->add($property);
+        }
     }
 
 } 

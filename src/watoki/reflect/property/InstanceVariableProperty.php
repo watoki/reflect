@@ -3,13 +3,14 @@ namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
 
-class PublicProperty extends Property {
+class InstanceVariableProperty extends Property {
 
     /** @var \ReflectionProperty */
     private $property;
 
     public function __construct(\ReflectionProperty $property, $required = false, $type = null) {
         parent::__construct($property->getName(), $required, $type);
+        $property->setAccessible(true);
         $this->property = $property;
     }
 
