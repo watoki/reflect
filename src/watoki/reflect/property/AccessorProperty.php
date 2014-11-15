@@ -12,9 +12,12 @@ class AccessorProperty extends Property {
     /** @var \ReflectionMethod|null */
     private $setter;
 
-    public function __construct(\ReflectionMethod $method, $required = false, $type = null) {
+    /**
+     * @param \ReflectionMethod $method
+     */
+    public function __construct(\ReflectionMethod $method) {
         $start = substr($method->getName(), 1, 2) == 'et' ? 3 : 2;
-        parent::__construct(lcfirst(substr($method->getName(), $start)), $required, $type);
+        parent::__construct(lcfirst(substr($method->getName(), $start)), $method->getDeclaringClass());
 
         if (substr($method->getName(), 0, 3) == 'set') {
             $this->setter = $method;
@@ -47,19 +50,19 @@ class AccessorProperty extends Property {
         return !!$this->setter;
     }
 
-    public function type() {
+    public function typeHints() {
         if ($this->getter) {
-            return $this->findType('/@return\s+(\S+)/', $this->getter->getDocComment(),
+            return $this->parseTypeHints('/@return\s+(\S+)/', $this->getter->getDocComment(),
                 $this->getter->getDeclaringClass());
         } else if ($this->setter) {
             $parameters = $this->setter->getParameters();
             $param = $parameters[0];
             if ($param->getClass()) {
-                return new ClassType($param->getClass()->getName());
+                return array($param->getClass()->getName());
             }
-            return $this->findType('/@param\s+(\S+)/', $this->setter->getDocComment(),
+            return $this->parseTypeHints('/@param\s+(\S+)/', $this->setter->getDocComment(),
                 $this->setter->getDeclaringClass());
         }
-        return null;
+        return array();
     }
 }

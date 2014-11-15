@@ -13,6 +13,7 @@ use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\MultiType;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
+use watoki\reflect\type\UnknownType;
 use watoki\scrut\Specification;
 
 /**
@@ -128,7 +129,7 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->then_ShouldHaveTheType('string', StringType::$CLASS);
         $this->then_ShouldHaveTheType('class', ClassType::$CLASS);
         $this->thenTheClassOf_ShouldBe('class', 'DateTime');
-        $this->then_ShouldHaveNoType('unknown');
+        $this->then_ShouldHaveTheType('unknown', UnknownType::$CLASS);
     }
 
     function testAccessorTypes() {
@@ -296,10 +297,6 @@ class ReadInterfacePropertiesTest extends Specification {
 
     private function then_ShouldHaveTheType($name, $type) {
         $this->assertInstanceOf($type, $this->properties[$name]->type());
-    }
-
-    private function then_ShouldHaveNoType($name) {
-        $this->assertEquals(null, $this->properties[$name]->type());
     }
 
     private function thenTheClassOf_ShouldBe($name, $class) {

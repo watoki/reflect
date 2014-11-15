@@ -11,8 +11,12 @@ class ConstructorProperty extends Property {
     /** @var \ReflectionParameter */
     private $parameter;
 
-    public function __construct(\ReflectionMethod $constructor, \ReflectionParameter $parameter, $required = false, $type = null) {
-        parent::__construct($parameter->getName(), $required, $type);
+    /**
+     * @param \ReflectionMethod $constructor
+     * @param \ReflectionParameter $parameter
+     */
+    public function __construct(\ReflectionMethod $constructor, \ReflectionParameter $parameter) {
+        parent::__construct($parameter->getName(), $constructor->getDeclaringClass());
         $this->constructor = $constructor;
         $this->parameter = $parameter;
     }
@@ -39,14 +43,14 @@ class ConstructorProperty extends Property {
         return $this->parameter->isDefaultValueAvailable() ? $this->parameter->getDefaultValue() : null;
     }
 
-    public function type() {
+    public function typeHints() {
         $class = $this->constructor->getDeclaringClass();
 
         if ($this->parameter->getClass()) {
-            return $this->resolveClassType($this->parameter->getClass()->getName(), $class);
+            return array($this->parameter->getClass()->getName());
         }
 
         $pattern = '/@param\s+(\S+)\s+\$' . $this->parameter->getName() . '/';
-        return $this->findType($pattern, $this->constructor->getDocComment(), $class);
+        return $this->parseTypeHints($pattern, $this->constructor->getDocComment(), $class);
     }
 }

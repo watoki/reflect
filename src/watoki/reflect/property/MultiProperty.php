@@ -9,6 +9,11 @@ class MultiProperty extends Property {
     /** @var array|Property[] */
     private $properties = array();
 
+    public function __construct(Property $base) {
+        parent::__construct($base->name(), $base->class);
+    }
+
+
     public function isRequired() {
         foreach ($this->properties as $property) {
             if ($property->isRequired()) {
@@ -67,20 +72,11 @@ class MultiProperty extends Property {
         $this->properties[] = $property;
     }
 
-    public function type() {
+    public function typeHints() {
         $types = array();
         foreach ($this->properties as $property) {
-            $type = $property->type();
-            if ($type) {
-                $types[] = $type;
-            }
+            $types = array_merge($types, $property->typeHints());
         }
-        if (!$types) {
-            return null;
-        } else if (count($types) == 1) {
-            return $types[0];
-        } else {
-            return new MultiType($types);
-        }
+        return $types;
     }
 }

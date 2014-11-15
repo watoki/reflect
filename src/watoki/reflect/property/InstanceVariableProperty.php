@@ -8,8 +8,11 @@ class InstanceVariableProperty extends Property {
     /** @var \ReflectionProperty */
     private $property;
 
-    public function __construct(\ReflectionProperty $property, $required = false, $type = null) {
-        parent::__construct($property->getName(), $required, $type);
+    /**
+     * @param \ReflectionProperty $property
+     */
+    public function __construct(\ReflectionProperty $property) {
+        parent::__construct($property->getName(), $property->getDeclaringClass());
         $property->setAccessible(true);
         $this->property = $property;
     }
@@ -38,8 +41,8 @@ class InstanceVariableProperty extends Property {
         return null;
     }
 
-    public function type() {
-        return $this->findType('/@var\s+(\S+).*/', $this->property->getDocComment(),
+    public function typeHints() {
+        return $this->parseTypeHints('/@var\s+(\S+).*/', $this->property->getDocComment(),
             $this->property->getDeclaringClass());
     }
 }

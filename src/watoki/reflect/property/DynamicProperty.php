@@ -5,8 +5,8 @@ use watoki\reflect\Property;
 
 class DynamicProperty extends Property {
 
-    public function type() {
-        return null;
+    public function typeHints() {
+        return array();
     }
 
     public function canGet() {

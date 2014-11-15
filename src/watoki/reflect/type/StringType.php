@@ -1,7 +1,9 @@
 <?php
 namespace watoki\reflect\type;
 
-class StringType {
+use watoki\reflect\Type;
+
+class StringType implements Type {
 
     public static $CLASS = __CLASS__;
 }

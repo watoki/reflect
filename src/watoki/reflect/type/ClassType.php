@@ -1,7 +1,9 @@
 <?php
 namespace watoki\reflect\type;
 
-class ClassType {
+use watoki\reflect\Type;
+
+class ClassType implements Type {
 
     public static $CLASS = __CLASS__;
 

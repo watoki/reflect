@@ -36,7 +36,7 @@ class PropertyReader {
         if (is_object($object)) {
             foreach ($object as $name => $value) {
                 $this->accumulate($properties,
-                    new property\DynamicProperty($name));
+                    new property\DynamicProperty($name, new \ReflectionClass($object)));
             }
         }
 
@@ -80,7 +80,7 @@ class PropertyReader {
         } else {
             $multi = $acc->get($property->name());
             if (!($multi instanceof property\MultiProperty)) {
-                $multi = new property\MultiProperty($property->name());
+                $multi = new property\MultiProperty($property);
                 $multi->add($acc->get($property->name()));
                 $acc->set($property->name(), $multi);
             }

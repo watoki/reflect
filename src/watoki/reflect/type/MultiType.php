@@ -1,19 +1,24 @@
 <?php
 namespace watoki\reflect\type;
 
-class MultiType {
+use watoki\reflect\Type;
+
+class MultiType implements Type {
 
     public static $CLASS = __CLASS__;
 
-    /** @var object[] */
+    /** @var Type[] */
     private $types;
 
-    function __construct($type) {
-        $this->types = $type;
+    /**
+     * @param array|Type[] $types
+     */
+    function __construct(array $types) {
+        $this->types = $types;
     }
 
     /**
-     * @return \object[]
+     * @return Type[]
      */
     public function getTypes() {
         return $this->types;

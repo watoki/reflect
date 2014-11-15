@@ -1,7 +1,9 @@
 <?php
 namespace watoki\reflect\type;
 
-class NullableType {
+use watoki\reflect\Type;
+
+class NullableType implements Type {
 
     public static $CLASS = __CLASS__;
 
