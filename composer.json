@@ -18,13 +18,13 @@
         "nikic/php-parser": "1.*"
     },
     "require-dev": {
-        "watoki/scrut":"*"
+        "watoki/scrut": "*"
     },
     "autoload": {
-        "psr-0": { "watoki\\reflect": "src/" }
-    },
-    "autoload-dev": {
-        "psr-0": { "spec\\watoki\\reflect": "" }
+        "psr-0": {
+            "watoki\\reflect": "src/",
+            "spec\\watoki\\reflect": ""
+        }
     },
     "minimum-stability": "dev"
 }
