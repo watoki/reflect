@@ -1,0 +1,29 @@
+{
+    "name": "watoki/reflect",
+    "description": "Enhanced reflection capabilities for PHP",
+    "keywords": ["reflection", "type hints", "watoki"],
+    "homepage": "http://github.com/watoki/reflect",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nikolas Martens",
+            "email": "Nikolas.M@rtens.org",
+            "homepage": "http://rtens.org"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.8",
+        "nikic/php-parser": "1.*"
+    },
+    "require-dev": {
+        "watoki/scrut":"*"
+    },
+    "autoload": {
+        "psr-0": { "watoki\\reflect": "src/" }
+    },
+    "autoload-dev": {
+        "psr-0": { "spec\\watoki\\reflect": "" }
+    },
+    "minimum-stability": "dev"
+}
