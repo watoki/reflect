@@ -7,15 +7,15 @@ class ArrayType implements Type {
 
     public static $CLASS = __CLASS__;
 
-    /** @var object */
+    /** @var Type */
     private $itemType;
 
-    function __construct($itemType) {
+    function __construct(Type $itemType) {
         $this->itemType = $itemType;
     }
 
     /**
-     * @return object
+     * @return Type
      */
     public function getItemType() {
         return $this->itemType;

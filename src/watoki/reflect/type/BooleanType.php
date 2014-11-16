@@ -1,9 +1,7 @@
 <?php
 namespace watoki\reflect\type;
 
-use watoki\reflect\Type;
-
-class BooleanType implements Type {
+class BooleanType extends PrimitiveType {
 
     public static $CLASS = __CLASS__;
 
