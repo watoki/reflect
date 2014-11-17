@@ -1,6 +1,8 @@
 <?php
 namespace watoki\reflect;
 
+use watoki\reflect\type\UnknownType;
+
 class TypeFactory {
 
     private static $TARGET_REFERENCE = 'TARGET';
@@ -74,6 +76,8 @@ class TypeFactory {
             case 'bool':
             case 'boolean':
                 return new type\BooleanType();
+            case 'array':
+                return new type\ArrayType(new UnknownType(''));
         }
 
         return $this->resolveClassHint($hint);

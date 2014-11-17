@@ -173,6 +173,9 @@ class ReadInterfacePropertiesTest extends Specification {
             /** @var array|string[] */
             public $array;
 
+            /** @var array|array[]|\DateTime[][] */
+            public $deepArray;
+
             /** @var int|string */
             public $multi;
 
@@ -184,13 +187,17 @@ class ReadInterfacePropertiesTest extends Specification {
         ');
 
         $this->whenIDetermineThePropertiesOf('ComplexTypes\SomeClass');
-        $this->thenThereShouldBe_Properties(4);
+        $this->thenThereShouldBe_Properties(5);
 
         $this->then_ShouldHaveTheType('int', NullableType::$CLASS);
         $this->thenTheInnerTypeOf_ShouldBe('int', IntegerType::$CLASS);
 
         $this->then_ShouldHaveTheType('array', ArrayType::$CLASS);
         $this->thenTheItemTypeOf_ShouldBe('array', StringType::$CLASS);
+
+        $this->then_ShouldHaveTheType('deepArray', ArrayType::$CLASS);
+        $this->thenTheItemTypeOf_ShouldBe('deepArray', ArrayType::$CLASS);
+        $this->thenTheItemTypeOfTheItemTypeOf_ShouldBe('deepArray', ClassType::$CLASS);
 
         $this->then_ShouldHaveTheType('multi', MultiType::$CLASS);
         $this->thenTheTypesOf_ShouldBe('multi', array(IntegerType::$CLASS, StringType::$CLASS));
@@ -233,7 +240,9 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->thenThereShouldBe_Properties(6);
 
         $this->then_ShouldBeAndIdentifierFor('suffixed', 'IdentifierType\SomeEntity');
+        $this->thenThePrimitiveTypeOf_ShouldBe('suffixed', StringType::$CLASS);
         $this->then_ShouldBeAndIdentifierFor('caseInsensitiveSuffix', 'IdentifierType\SomeEntity');
+        $this->thenThePrimitiveTypeOf_ShouldBe('caseInsensitiveSuffix', IntegerType::$CLASS);
         $this->then_ShouldBeAndIdentifierObjectFor('targetConst', 'IdentifierType\SomeEntity');
         $this->then_ShouldBeAndIdentifierObjectFor('targetStaticMethod', 'IdentifierType\SomeEntity');
         $this->then_ShouldBeAndIdentifierObjectFor('sameNameSpace', 'IdentifierType\SomeEntity');
@@ -324,6 +333,18 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->assertInstanceOf($expectedType, $type->getItemType());
     }
 
+    private function thenTheItemTypeOfTheItemTypeOf_ShouldBe($name, $expectedType) {
+        $type = $this->properties[$name]->type();
+        if (!($type instanceof ArrayType)) {
+            $this->fail("Not an ArrayType: $name");
+        }
+        $itemType = $type->getItemType();
+        if (!($itemType instanceof ArrayType)) {
+            $this->fail("Item Type not an ArrayType: $name");
+        }
+        $this->assertInstanceOf($expectedType, $itemType->getItemType());
+    }
+
     private function thenTheTypesOf_ShouldBe($name, $types) {
         $type = $this->properties[$name]->type();
         if (!($type instanceof MultiType)) {
@@ -345,6 +366,14 @@ class ReadInterfacePropertiesTest extends Specification {
     private function then_ShouldBeAndIdentifierFor($property, $target) {
         $this->then_ShouldHaveTheType($property, IdentifierType::$CLASS);
         $this->thenTheTargetOf_ShouldBe($property, $target);
+    }
+
+    private function thenThePrimitiveTypeOf_ShouldBe($property, $primitiveType) {
+        $type = $this->properties[$property]->type();
+        if (!($type instanceof IdentifierType)) {
+            $this->fail("Not a IdentifierType: $property");
+        }
+        $this->assertInstanceOf($primitiveType, $type->getPrimitive());
     }
 
     private function then_ShouldBeAndIdentifierObjectFor($property, $target) {
