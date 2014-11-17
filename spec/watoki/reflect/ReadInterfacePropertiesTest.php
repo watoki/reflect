@@ -10,6 +10,7 @@ use watoki\reflect\type\FloatType;
 use watoki\reflect\type\IdentifierObjectType;
 use watoki\reflect\type\IdentifierType;
 use watoki\reflect\type\IntegerType;
+use watoki\reflect\type\LongType;
 use watoki\reflect\type\MultiType;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
@@ -145,7 +146,7 @@ class ReadInterfacePropertiesTest extends Specification {
 
         $this->whenIDetermineThePropertiesOf('accessorTypes\SomeClass');
         $this->thenThereShouldBe_Properties(3);
-        $this->then_ShouldHaveTheType('one', IntegerType::$CLASS);
+        $this->then_ShouldHaveTheType('one', LongType::$CLASS);
         $this->then_ShouldHaveTheType('two', FloatType::$CLASS);
         $this->then_ShouldHaveTheType('three', ClassType::$CLASS);
     }
@@ -210,10 +211,10 @@ class ReadInterfacePropertiesTest extends Specification {
             function __toString() {}
         ');
         $this->class->givenTheClass_WithTheBody('IdentifierType\SomeClass', '
-            /** @var SomeEntity-ID */
+            /** @var string|SomeEntity-ID */
             public $suffixed;
 
-            /** @var SomeEntity-Id */
+            /** @var int|SomeEntity-Id */
             public $caseInsensitiveSuffix;
 
             /** @var \IdentifierType\elsewhere\ThisId */

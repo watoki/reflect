@@ -10,8 +10,16 @@ class IdentifierType implements Type {
     /** @var string */
     private $target;
 
-    function __construct($target) {
+    /** @var Type */
+    private $primitive;
+
+    /**
+     * @param string $target Identified class
+     * @param Type $primitive
+     */
+    public function __construct($target, Type $primitive) {
         $this->target = trim($target, '\\');
+        $this->primitive = $primitive;
     }
 
     /**
@@ -19,6 +27,13 @@ class IdentifierType implements Type {
      */
     public function getTarget() {
         return $this->target;
+    }
+
+    /**
+     * @return \watoki\reflect\Type
+     */
+    public function getPrimitive() {
+        return $this->primitive;
     }
 
 } 

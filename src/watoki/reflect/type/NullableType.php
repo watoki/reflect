@@ -3,7 +3,7 @@ namespace watoki\reflect\type;
 
 use watoki\reflect\Type;
 
-class NullableType extends PrimitiveType {
+class NullableType implements Type {
 
     public static $CLASS = __CLASS__;
 

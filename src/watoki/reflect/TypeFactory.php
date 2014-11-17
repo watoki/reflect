@@ -35,6 +35,16 @@ class TypeFactory {
                 return str_replace('[]', '', $type);
             }, $hints);
             return new type\ArrayType($this->fromTypeHints($hints));
+        } else {
+            foreach ($hints as $hint) {
+                if (strtolower(substr($hint, -3)) == '-id') {
+                    $resolved = $this->resolver->resolve(substr($hint, 0, -3));
+                    if ($resolved) {
+                        $hints = array_values(array_diff($hints, array($hint)));
+                        return new type\IdentifierType($resolved, $this->fromTypeHints($hints));
+                    }
+                }
+            }
         }
 
         $types = array();
@@ -64,15 +74,6 @@ class TypeFactory {
             case 'bool':
             case 'boolean':
                 return new type\BooleanType();
-        }
-
-        if (strtolower(substr($hint, -3)) == '-id') {
-            $resolved = $this->resolver->resolve(substr($hint, 0, -3));
-            if ($resolved) {
-                return new type\IdentifierType($resolved);
-            } else {
-                return new type\UnknownType($hint);
-            }
         }
 
         return $this->resolveClassHint($hint);

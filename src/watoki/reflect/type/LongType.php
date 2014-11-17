@@ -1,7 +1,7 @@
 <?php
 namespace watoki\reflect\type;
 
-class LongType extends IntegerType {
+class LongType extends PrimitiveType {
 
     public static $CLASS = __CLASS__;
 

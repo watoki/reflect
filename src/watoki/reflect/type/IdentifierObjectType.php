@@ -9,7 +9,7 @@ class IdentifierObjectType extends IdentifierType {
     private $class;
 
     function __construct($target, $identifierClass) {
-        parent::__construct($target);
+        parent::__construct($target, new ClassType($identifierClass));
         $this->class = $identifierClass;
 
         if (!method_exists($identifierClass, '__toString')) {

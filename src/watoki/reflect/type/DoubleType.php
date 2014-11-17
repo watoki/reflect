@@ -1,7 +1,9 @@
 <?php
 namespace watoki\reflect\type;
 
-class DoubleType extends FloatType {
+use watoki\reflect\Type;
+
+class DoubleType extends PrimitiveType {
 
     public static $CLASS = __CLASS__;
 
