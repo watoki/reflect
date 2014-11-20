@@ -233,20 +233,24 @@ class ReadInterfacePropertiesTest extends Specification {
             /** @var SomeEntityId */
             public $sameNameSpace;
 
+            /** @var array|string[]|SomeEntity-ID[] */
+            public $array;
+
             function __construct(SomeEntityId $inConstructor = null) {}
         ');
 
         $this->whenIDetermineThePropertiesOf('IdentifierType\SomeClass');
-        $this->thenThereShouldBe_Properties(6);
+        $this->thenThereShouldBe_Properties(7);
 
         $this->then_ShouldBeAndIdentifierFor('suffixed', 'IdentifierType\SomeEntity');
         $this->thenThePrimitiveTypeOf_ShouldBe('suffixed', StringType::$CLASS);
         $this->then_ShouldBeAndIdentifierFor('caseInsensitiveSuffix', 'IdentifierType\SomeEntity');
         $this->thenThePrimitiveTypeOf_ShouldBe('caseInsensitiveSuffix', IntegerType::$CLASS);
-        $this->then_ShouldBeAndIdentifierObjectFor('targetConst', 'IdentifierType\SomeEntity');
-        $this->then_ShouldBeAndIdentifierObjectFor('targetStaticMethod', 'IdentifierType\SomeEntity');
-        $this->then_ShouldBeAndIdentifierObjectFor('sameNameSpace', 'IdentifierType\SomeEntity');
-        $this->then_ShouldBeAndIdentifierObjectFor('inConstructor', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAnIdentifierObjectFor('targetConst', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAnIdentifierObjectFor('targetStaticMethod', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAnIdentifierObjectFor('sameNameSpace', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAnIdentifierObjectFor('inConstructor', 'IdentifierType\SomeEntity');
+        $this->then_ShouldBeAnArrayOfIdentifiersFor('array', 'IdentifierType\SomeEntity');
     }
 
     ##################################################################################################
@@ -376,9 +380,21 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->assertInstanceOf($primitiveType, $type->getPrimitive());
     }
 
-    private function then_ShouldBeAndIdentifierObjectFor($property, $target) {
+    private function then_ShouldBeAnIdentifierObjectFor($property, $target) {
         $this->then_ShouldHaveTheType($property, IdentifierObjectType::$CLASS);
         $this->thenTheTargetOf_ShouldBe($property, $target);
+    }
+
+    private function then_ShouldBeAnArrayOfIdentifiersFor($property, $target) {
+        $arrayType = $this->properties[$property]->type();
+        if (!($arrayType instanceof ArrayType)) {
+            $this->fail("Not ArrayType");
+        }
+        $itemType = $arrayType->getItemType();
+        if (!($itemType instanceof IdentifierType)) {
+            $this->fail("Not IdentifierType: " . get_class($itemType));
+        }
+        $this->assertEquals($target, $itemType->getTarget());
     }
 
 } 
