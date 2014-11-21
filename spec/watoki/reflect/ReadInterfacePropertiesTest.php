@@ -26,6 +26,7 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->class->givenTheClass_WithTheBody('publicProperties\SomeClass', '
             public $public = "one";
             private $private = "four";
+            public static $static = "not";
         ');
 
         $this->whenIDetermineThePropertiesOf('publicProperties\SomeClass');
@@ -44,6 +45,7 @@ class ReadInterfacePropertiesTest extends Specification {
             function setBoth($a) {}
             function notAnAccessor() {}
             function getNeither ($becauseOfTheParameter) {}
+            static function getStatic() {}
         ');
 
         $this->whenIDetermineThePropertiesOf('accessors\SomeClass');
