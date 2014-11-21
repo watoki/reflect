@@ -2,7 +2,6 @@
 namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
-use watoki\reflect\type\MultiType;
 
 class MultiProperty extends Property {
 
@@ -77,6 +76,6 @@ class MultiProperty extends Property {
         foreach ($this->properties as $property) {
             $types = array_merge($types, $property->typeHints());
         }
-        return $types;
+        return array_unique($types);
     }
 }

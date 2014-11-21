@@ -179,6 +179,9 @@ class ReadInterfacePropertiesTest extends Specification {
             /** @var int|string */
             public $multi;
 
+            /** @var int|int */
+            public $notMulti;
+
             /** @var string */
             public $merged;
 
@@ -187,7 +190,7 @@ class ReadInterfacePropertiesTest extends Specification {
         ');
 
         $this->whenIDetermineThePropertiesOf('ComplexTypes\SomeClass');
-        $this->thenThereShouldBe_Properties(5);
+        $this->thenThereShouldBe_Properties(6);
 
         $this->then_ShouldHaveTheType('int', NullableType::$CLASS);
         $this->thenTheInnerTypeOf_ShouldBe('int', IntegerType::$CLASS);
@@ -201,6 +204,8 @@ class ReadInterfacePropertiesTest extends Specification {
 
         $this->then_ShouldHaveTheType('multi', MultiType::$CLASS);
         $this->thenTheTypesOf_ShouldBe('multi', array(IntegerType::$CLASS, StringType::$CLASS));
+
+        $this->then_ShouldHaveTheType('notMulti', IntegerType::$CLASS);
 
         $this->then_ShouldHaveTheType('merged', MultiType::$CLASS);
         $this->thenTheTypesOf_ShouldBe('merged', array(StringType::$CLASS, DoubleType::$CLASS));
