@@ -260,15 +260,16 @@ class ReadInterfacePropertiesTest extends Specification {
 
     function testDeDuplicateTypes() {
         $this->class->givenTheClass_WithTheBody('deDuplicate\SomeClass', '
-            /** @var \deDuplicate\some\OtherClass */
+            /** @var \deDuplicate\some\OtherClassId */
             public $one;
-            function __construct(some\OtherClass $one = null) {}
+            function __construct(some\OtherClassId $one = null) {}
         ');
         $this->class->givenTheClass('deDuplicate\some\OtherClass');
+        $this->class->givenTheClass_WithTheBody('deDuplicate\some\OtherClassId', 'function __toString() { return "foo"; }');
 
         $this->whenIDetermineThePropertiesOf('deDuplicate\SomeClass');
         $this->thenThereShouldBe_Properties(1);
-        $this->then_ShouldHaveTheType('one', ClassType::$CLASS);
+        $this->then_ShouldHaveTheType('one', IdentifierObjectType::$CLASS);
     }
 
     ##################################################################################################
