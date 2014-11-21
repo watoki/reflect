@@ -51,7 +51,13 @@ class TypeFactory {
 
         $types = array();
         foreach ($hints as $hint) {
-            $types[] = $this->fromTypeHint($hint);
+            $type = $this->fromTypeHint($hint);
+            if (!in_array($type, $types)) {
+                $types[] = $type;
+            }
+        }
+        if (count($types) == 1) {
+            return $types[0];
         }
         return new type\MultiType($types);
     }

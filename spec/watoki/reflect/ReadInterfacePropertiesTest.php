@@ -258,6 +258,19 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->then_ShouldBeAnArrayOfIdentifiersFor('array', 'IdentifierType\SomeEntity');
     }
 
+    function testDeDuplicateTypes() {
+        $this->class->givenTheClass_WithTheBody('deDuplicate\SomeClass', '
+            /** @var \deDuplicate\some\OtherClass */
+            public $one;
+            function __construct(some\OtherClass $one = null) {}
+        ');
+        $this->class->givenTheClass('deDuplicate\some\OtherClass');
+
+        $this->whenIDetermineThePropertiesOf('deDuplicate\SomeClass');
+        $this->thenThereShouldBe_Properties(1);
+        $this->then_ShouldHaveTheType('one', ClassType::$CLASS);
+    }
+
     ##################################################################################################
 
     private $args = array();
