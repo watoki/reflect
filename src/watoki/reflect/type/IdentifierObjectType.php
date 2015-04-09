@@ -10,7 +10,7 @@ class IdentifierObjectType extends IdentifierType {
 
     function __construct($target, $identifierClass) {
         parent::__construct($target, new ClassType($identifierClass));
-        $this->class = $identifierClass;
+        $this->class = trim($identifierClass, '\\');
 
         if (!method_exists($identifierClass, '__toString')) {
             throw new \Exception("Method [$identifierClass::__toString] does not exist. " .

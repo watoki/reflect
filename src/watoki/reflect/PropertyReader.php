@@ -29,8 +29,10 @@ class PropertyReader {
         }
 
         foreach ($this->class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            $this->accumulate($properties,
-                new property\InstanceVariableProperty($property));
+            if (!$property->isStatic()) {
+                $this->accumulate($properties,
+                    new property\InstanceVariableProperty($property));
+            }
         }
 
         if (is_object($object)) {
@@ -41,7 +43,7 @@ class PropertyReader {
         }
 
         foreach ($this->class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-            if (property\AccessorProperty::isAccessor($method)) {
+            if (property\AccessorProperty::isAccessor($method) && !$method->isStatic()) {
                 $this->accumulate($properties,
                     new property\AccessorProperty($method));
             }
