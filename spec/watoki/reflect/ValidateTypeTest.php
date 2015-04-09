@@ -64,7 +64,7 @@ class ValidateTypeTest extends Specification {
     }
 
     function testClass() {
-        $type = new ClassType(\DateTimeInterface::class);
+        $type = new ClassType('DateTimeInterface');
         $this->assertTrue($type->is(new \DateTime()));
         $this->assertFalse($type->is(new \StdClass()));
         $this->assertFalse($type->is("foo"));
@@ -76,7 +76,7 @@ class ValidateTypeTest extends Specification {
     }
 
     function testIdentifierObject() {
-        $type = new IdentifierObjectType("Foo", ValidateTypeTest_Identifier::class);
+        $type = new IdentifierObjectType("Foo", ValidateTypeTest_Identifier::$CLASS);
         $this->assertTrue($type->is(new ValidateTypeTest_Identifier()));
     }
 
@@ -109,6 +109,8 @@ class ValidateTypeTest extends Specification {
 }
 
 class ValidateTypeTest_Identifier {
+    public static $CLASS = __CLASS__;
+
     function __toString() {
         return "foo";
     }
