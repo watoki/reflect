@@ -10,14 +10,14 @@ class UnknownType implements Type {
     private $hint;
 
     /**
-     * @param string $hint
+     * @param string|null $hint
      */
-    public function __construct($hint) {
+    public function __construct($hint = null) {
         $this->hint = $hint;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getHint() {
         return $this->hint;

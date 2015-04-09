@@ -8,6 +8,11 @@ class IdentifierObjectType extends IdentifierType {
     /** @var string */
     private $class;
 
+    /**
+     * @param string $target
+     * @param string $identifierClass
+     * @throws \Exception
+     */
     function __construct($target, $identifierClass) {
         parent::__construct($target, new ClassType($identifierClass));
         $this->class = trim($identifierClass, '\\');
