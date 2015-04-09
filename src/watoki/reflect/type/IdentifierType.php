@@ -36,4 +36,7 @@ class IdentifierType implements Type {
         return $this->primitive;
     }
 
-} 
+    public function is($value) {
+        return $this->primitive->is($value);
+    }
+}

@@ -22,4 +22,8 @@ class IdentifierObjectType extends IdentifierType {
         $class = $this->class;
         return new $class($value);
     }
+
+    public function is($value) {
+        return is_object($value) && is_a($value, $this->class);
+    }
 }

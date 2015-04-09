@@ -23,4 +23,7 @@ class UnknownType implements Type {
         return $this->hint;
     }
 
-} 
+    public function is($value) {
+        return true;
+    }
+}

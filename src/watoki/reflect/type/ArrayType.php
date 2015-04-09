@@ -21,4 +21,7 @@ class ArrayType implements Type {
         return $this->itemType;
     }
 
-} 
+    public function is($value) {
+        return is_array($value);
+    }
+}

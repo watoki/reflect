@@ -24,4 +24,12 @@ class MultiType implements Type {
         return $this->types;
     }
 
+    public function is($value) {
+        foreach ($this->types as $type) {
+            if ($type->is($value)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

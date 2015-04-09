@@ -62,6 +62,9 @@ class TypeFactory {
      */
     public function fromTypeHint($hint) {
         switch (strtolower($hint)) {
+            case 'null':
+            case 'void':
+                return new type\NullType();
             case 'int':
             case 'integer':
                 return new type\IntegerType();

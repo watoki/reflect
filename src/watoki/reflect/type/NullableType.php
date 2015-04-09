@@ -21,4 +21,7 @@ class NullableType implements Type {
         return $this->type;
     }
 
-} 
+    public function is($value) {
+        return is_null($value) || $this->type->is($value);
+    }
+}

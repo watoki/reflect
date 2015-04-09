@@ -24,4 +24,7 @@ class ClassType implements Type {
         return $this->class;
     }
 
-} 
+    public function is($value) {
+        return is_object($value) && is_a($value, $this->class);
+    }
+}
