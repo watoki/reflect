@@ -64,8 +64,9 @@ class ValidateTypeTest extends Specification {
     }
 
     function testClass() {
-        $type = new ClassType('DateTimeInterface');
-        $this->assertTrue($type->is(new \DateTime()));
+        $type = new ClassType(ValidateTypeTest_Foo::$CLASS);
+        $this->assertTrue($type->is(new ValidateTypeTest_Foo()));
+        $this->assertTrue($type->is(new ValidateTypeTest_Bar()));
         $this->assertFalse($type->is(new \StdClass()));
         $this->assertFalse($type->is("foo"));
     }
@@ -76,8 +77,8 @@ class ValidateTypeTest extends Specification {
     }
 
     function testIdentifierObject() {
-        $type = new IdentifierObjectType("Foo", ValidateTypeTest_Identifier::$CLASS);
-        $this->assertTrue($type->is(new ValidateTypeTest_Identifier()));
+        $type = new IdentifierObjectType("Foo", ValidateTypeTest_Foo::$CLASS);
+        $this->assertTrue($type->is(new ValidateTypeTest_Foo()));
     }
 
     function testMulti() {
@@ -108,11 +109,15 @@ class ValidateTypeTest extends Specification {
     }
 }
 
-class ValidateTypeTest_Identifier {
+class ValidateTypeTest_Foo {
     public static $CLASS = __CLASS__;
 
     function __toString() {
         return "foo";
     }
 
+}
+
+class ValidateTypeTest_Bar extends ValidateTypeTest_Foo {
+    public static $CLASS = __CLASS__;
 }
