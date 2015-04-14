@@ -12,13 +12,14 @@ class MethodAnalyzer {
     /**
      * @param array $args
      * @param callable $injector
+     * @param callable $parameterFilter
      * @return array
      */
-    public function fillParameters(array $args, $injector) {
+    public function fillParameters(array $args, $injector, $parameterFilter) {
         $argArray = array();
         foreach ($this->method->getParameters() as $param) {
             try {
-                $argArray[$param->getName()] = $this->fillParameter($param, $args, $injector);
+                $argArray[$param->getName()] = $this->fillParameter($param, $args, $injector, $parameterFilter);
             } catch (\Exception $e) {
                 $this->throwException($param, $e);
             }
@@ -54,29 +55,29 @@ class MethodAnalyzer {
     /**
      * @param \ReflectionParameter $param
      * @param array $args
-     * @param $injector
-     * @throws \Exception
+     * @param callable $injector
+     * @param callable $argumentsFilter
      * @return object
+     * @throws \Exception
      */
-    private function fillParameter(\ReflectionParameter $param, array $args, $injector) {
+    private function fillParameter(\ReflectionParameter $param, array $args, $injector, $argumentsFilter) {
         if ($this->hasValue($param, $args)) {
             return $this->getValue($param, $args);
         } else if ($param->isDefaultValueAvailable()) {
             return $param->getDefaultValue();
-        } else if ($this->isMarkedInjectable($param)) {
+        } else if ($this->isInjectable($param, $argumentsFilter)) {
             $type = $this->getTypeHint($param);
             if (!$type) {
                 throw new \InvalidArgumentException("Argument not given and no type hint found.");
             }
             return call_user_func($injector, $type);
         } else {
-            throw new \InvalidArgumentException("Argument not given and not marked as injectable.");
+            throw new \InvalidArgumentException("Argument not given and not injectable.");
         }
     }
 
-    private function isMarkedInjectable(\ReflectionParameter $param) {
-        $pattern = '/@param.+\$' . $param->getName() . '.+' . \watoki\factory\Injector::INJECTION_MARKER . '/';
-        return preg_match($pattern, $this->method->getDocComment());
+    private function isInjectable(\ReflectionParameter $param, $argumentsFilter) {
+        return call_user_func($argumentsFilter, $param);
     }
 
     public function getTypeHint(\ReflectionParameter $param) {
