@@ -74,6 +74,6 @@ class ClassFixture extends Fixture {
     }
 
     public function givenISetAnInstanceOf_AsSingletonFor($implementation, $interface) {
-        $this->spec->factory->setSingleton($interface, new $implementation);
+        $this->spec->factory->setSingleton(new $implementation, $interface);
     }
 }
