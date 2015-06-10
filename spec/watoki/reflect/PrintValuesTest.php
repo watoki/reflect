@@ -45,7 +45,7 @@ class PrintValuesTest extends Specification {
         $this->assertEquals("<Exception>", ValuePrinter::serialize(new \Exception()));
         $this->assertEquals("<InvalidArgumentException>('Some message')", ValuePrinter::serialize(new \InvalidArgumentException('Some message')));
         $this->assertEquals("<Exception>('With code', 42)", ValuePrinter::serialize(new \Exception('With code', 42)));
-        $this->assertEquals("<Exception>('With previous') -> <Exception>('The previous') -> <Exception>", ValuePrinter::serialize(
+        $this->assertEquals("<Exception>('With previous') <- <Exception>('The previous') <- <Exception>", ValuePrinter::serialize(
             new \Exception('With previous', 0,
                 new \Exception('The previous', 0,
                     new \Exception()))));

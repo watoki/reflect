@@ -70,7 +70,7 @@ class ValuePrinter {
         }
 
         if ($exception->getPrevious()) {
-            $appendix .= ' -> ' . self::serializeException($exception->getPrevious());
+            $appendix .= ' <- ' . self::serializeException($exception->getPrevious());
         }
 
         return self::serializeObject($exception, $appendix);
