@@ -171,7 +171,7 @@ class ReadInterfacePropertiesTest extends Specification {
             /** @var null|int */
             public $int;
 
-            /** @var array|string[] */
+            /** @var string[] */
             public $array;
 
             /** @var array|array[]|\DateTime[][] */

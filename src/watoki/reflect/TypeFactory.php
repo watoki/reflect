@@ -15,15 +15,11 @@ class TypeFactory {
             return new type\UnknownType('');
         }
 
-        if (count($hints) == 1) {
-            return $this->fromTypeHint($hints[0], $class);
-        }
-
         if (in_array('null', $hints)) {
             $hints = array_values(array_diff($hints, array('null')));
             return new type\NullableType($this->fromTypeHints($hints, $class));
 
-        } else if (in_array('array', $hints)) {
+        } else if ($this->isArrayHint($hints)) {
             $hints = array_values(array_diff($hints, array('array')));
             $hints = array_map(function ($type) {
                 return str_replace('[]', '', $type);
@@ -89,5 +85,17 @@ class TypeFactory {
         }
 
         return new type\ClassType($resolved);
+    }
+
+    private function isArrayHint(array $hints) {
+        if (in_array('array', $hints)) {
+            return true;
+        }
+        foreach ($hints as $hint) {
+            if (substr($hint, -2) == '[]') {
+                return true;
+            }
+        }
+        return false;
     }
 }
