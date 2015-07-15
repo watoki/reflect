@@ -2,14 +2,15 @@
 namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
+use watoki\reflect\TypeFactory;
 
 class MultiProperty extends Property {
 
     /** @var array|Property[] */
     private $properties = array();
 
-    public function __construct(Property $base) {
-        parent::__construct($base->name(), $base->class);
+    public function __construct(TypeFactory $factory, Property $base) {
+        parent::__construct($factory, $base->class, $base->name());
     }
 
 

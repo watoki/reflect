@@ -2,6 +2,7 @@
 namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
+use watoki\reflect\TypeFactory;
 
 class ConstructorProperty extends Property {
 
@@ -12,11 +13,12 @@ class ConstructorProperty extends Property {
     private $parameter;
 
     /**
+     * @param TypeFactory $factory
      * @param \ReflectionMethod $constructor
      * @param \ReflectionParameter $parameter
      */
-    public function __construct(\ReflectionMethod $constructor, \ReflectionParameter $parameter) {
-        parent::__construct($parameter->getName(), $constructor->getDeclaringClass());
+    public function __construct(TypeFactory $factory, \ReflectionMethod $constructor, \ReflectionParameter $parameter) {
+        parent::__construct($factory, $constructor->getDeclaringClass(), $parameter->getName());
         $this->constructor = $constructor;
         $this->parameter = $parameter;
     }
@@ -44,13 +46,11 @@ class ConstructorProperty extends Property {
     }
 
     public function typeHints() {
-        $class = $this->constructor->getDeclaringClass();
-
         if ($this->parameter->getClass()) {
             return array($this->parameter->getClass()->getName());
         }
 
         $pattern = '/@param\s+(\S+)\s+\$' . $this->parameter->getName() . '/';
-        return $this->parseTypeHints($pattern, $this->constructor->getDocComment(), $class);
+        return $this->parseTypeHints($pattern, $this->constructor->getDocComment());
     }
 }

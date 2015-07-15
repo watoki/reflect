@@ -8,8 +8,16 @@ class PropertyReader {
     /** @var \ReflectionClass */
     private $class;
 
-    function __construct($class) {
+    /** @var TypeFactory */
+    private $factory;
+
+    /**
+     * @param TypeFactory $factory
+     * @param string $class
+     */
+    function __construct(TypeFactory $factory, $class) {
         $this->class = new \ReflectionClass($class);
+        $this->factory = $factory;
     }
 
     /**
@@ -24,28 +32,28 @@ class PropertyReader {
         if ($this->class->getConstructor()) {
             foreach ($this->class->getConstructor()->getParameters() as $parameter) {
                 $this->accumulate($properties,
-                    new property\ConstructorProperty($this->class->getConstructor(), $parameter));
+                    new property\ConstructorProperty($this->factory, $this->class->getConstructor(), $parameter));
             }
         }
 
         foreach ($this->class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             if (!$property->isStatic()) {
                 $this->accumulate($properties,
-                    new property\InstanceVariableProperty($property));
+                    new property\InstanceVariableProperty($this->factory, $property));
             }
         }
 
         if (is_object($object)) {
             foreach ($object as $name => $value) {
                 $this->accumulate($properties,
-                    new property\DynamicProperty($name, new \ReflectionClass($object)));
+                    new property\DynamicProperty($this->factory, new \ReflectionClass($object), $name));
             }
         }
 
         foreach ($this->class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
             if (property\AccessorProperty::isAccessor($method) && !$method->isStatic()) {
                 $this->accumulate($properties,
-                    new property\AccessorProperty($method));
+                    new property\AccessorProperty($this->factory, $method));
             }
         }
 
@@ -70,7 +78,7 @@ class PropertyReader {
             }
 
             $this->accumulate($properties,
-                new property\InstanceVariableProperty($property));
+                new property\InstanceVariableProperty($this->factory, $property));
         }
 
         return $properties;
@@ -82,7 +90,7 @@ class PropertyReader {
         } else {
             $multi = $acc->get($property->name());
             if (!($multi instanceof property\MultiProperty)) {
-                $multi = new property\MultiProperty($property);
+                $multi = new property\MultiProperty($this->factory, $property);
                 $multi->add($acc->get($property->name()));
                 $acc->set($property->name(), $multi);
             }

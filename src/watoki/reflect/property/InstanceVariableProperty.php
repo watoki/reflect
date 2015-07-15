@@ -2,6 +2,7 @@
 namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
+use watoki\reflect\TypeFactory;
 
 class InstanceVariableProperty extends Property {
 
@@ -9,10 +10,11 @@ class InstanceVariableProperty extends Property {
     private $property;
 
     /**
+     * @param TypeFactory $factory
      * @param \ReflectionProperty $property
      */
-    public function __construct(\ReflectionProperty $property) {
-        parent::__construct($property->getName(), $property->getDeclaringClass());
+    public function __construct(TypeFactory $factory, \ReflectionProperty $property) {
+        parent::__construct($factory, $property->getDeclaringClass(), $property->getName());
         $property->setAccessible(true);
         $this->property = $property;
     }
@@ -42,7 +44,6 @@ class InstanceVariableProperty extends Property {
     }
 
     public function typeHints() {
-        return $this->parseTypeHints('/@var\s+(\S+).*/', $this->property->getDocComment(),
-            $this->property->getDeclaringClass());
+        return $this->parseTypeHints('/@var\s+(\S+).*/', $this->property->getDocComment());
     }
 }

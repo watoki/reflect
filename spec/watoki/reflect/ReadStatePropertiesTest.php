@@ -2,6 +2,7 @@
 namespace spec\watoki\reflect;
 
 use watoki\reflect\PropertyReader;
+use watoki\reflect\TypeFactory;
 use watoki\scrut\Specification;
 
 /**
@@ -69,7 +70,7 @@ class ReadStatePropertiesTest extends Specification {
     }
 
     private function whenIReadTheStatePropertiesOf_WithTheFilter($class, $filter) {
-        $reader = new PropertyReader($class);
+        $reader = new PropertyReader(new TypeFactory(), $class);
         $this->properties = $reader->readState($filter);
     }
 

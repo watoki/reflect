@@ -5,41 +5,35 @@ use watoki\reflect\type\UnknownType;
 
 class TypeFactory {
 
-    /** @var \watoki\reflect\ClassResolver */
-    private $resolver;
-
-    public function __construct(\ReflectionClass $class) {
-        $this->resolver = new ClassResolver($class);
-    }
-
     /**
-     * @param array $hints
+     * @param array|string[] $hints
+     * @param \ReflectionClass $class
      * @return Type
      */
-    public function fromTypeHints(array $hints) {
+    public function fromTypeHints(array $hints, \ReflectionClass $class) {
         if (!$hints) {
             return new type\UnknownType('');
         }
 
         if (count($hints) == 1) {
-            return $this->fromTypeHint($hints[0]);
+            return $this->fromTypeHint($hints[0], $class);
         }
 
         if (in_array('null', $hints)) {
             $hints = array_values(array_diff($hints, array('null')));
-            return new type\NullableType($this->fromTypeHints($hints));
+            return new type\NullableType($this->fromTypeHints($hints, $class));
 
         } else if (in_array('array', $hints)) {
             $hints = array_values(array_diff($hints, array('array')));
             $hints = array_map(function ($type) {
                 return str_replace('[]', '', $type);
             }, $hints);
-            return new type\ArrayType($this->fromTypeHints($hints));
+            return new type\ArrayType($this->fromTypeHints($hints, $class));
         }
 
         $types = array();
         foreach ($hints as $hint) {
-            $type = $this->fromTypeHint($hint);
+            $type = $this->fromTypeHint($hint, $class);
             if (!in_array($type, $types)) {
                 $types[] = $type;
             }
@@ -51,10 +45,11 @@ class TypeFactory {
     }
 
     /**
-     * @param $hint
+     * @param string $hint
+     * @param \ReflectionClass $class
      * @return Type
      */
-    public function fromTypeHint($hint) {
+    public function fromTypeHint($hint, \ReflectionClass $class) {
         switch (strtolower($hint)) {
             case 'null':
             case 'void':
@@ -77,15 +72,17 @@ class TypeFactory {
                 return new type\ArrayType(new UnknownType(''));
         }
 
-        return $this->resolveClassHint($hint);
+        return $this->resolveClassHint($hint, $class);
     }
 
     /**
-     * @param $hint
+     * @param string $hint
+     * @param \ReflectionClass $class
      * @return Type
      */
-    protected function resolveClassHint($hint) {
-        $resolved = $this->resolver->resolve($hint);
+    protected function resolveClassHint($hint, \ReflectionClass $class) {
+        $resolver = new ClassResolver($class);
+        $resolved = $resolver->resolve($hint);
 
         if (!$resolved) {
             return new type\UnknownType($hint);

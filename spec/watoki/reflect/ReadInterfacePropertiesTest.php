@@ -13,6 +13,7 @@ use watoki\reflect\type\MultiType;
 use watoki\reflect\type\NullableType;
 use watoki\reflect\type\StringType;
 use watoki\reflect\type\UnknownType;
+use watoki\reflect\TypeFactory;
 use watoki\scrut\Specification;
 
 /**
@@ -241,7 +242,7 @@ class ReadInterfacePropertiesTest extends Specification {
     private function whenIDetermineThePropertiesOf($class) {
         $reflection = new \ReflectionClass($class);
         $this->object = $reflection->newInstanceArgs($this->args);
-        $reader = new PropertyReader($class);
+        $reader = new PropertyReader(new TypeFactory(), $class);
         $this->properties = $reader->readInterface($this->object);
     }
 

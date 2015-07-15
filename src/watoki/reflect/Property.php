@@ -2,6 +2,7 @@
 namespace watoki\reflect;
 
 abstract class Property {
+    private $factory;
 
     /** @var string */
     private $name;
@@ -10,12 +11,14 @@ abstract class Property {
     protected $class;
 
     /**
-     * @param string $name
+     * @param TypeFactory $factory
      * @param \ReflectionClass $class
+     * @param string $name
      */
-    public function __construct($name, \ReflectionClass $class) {
+    public function __construct(TypeFactory $factory, \ReflectionClass $class, $name) {
         $this->name = $name;
         $this->class = $class;
+        $this->factory = $factory;
     }
 
     /**
@@ -66,8 +69,7 @@ abstract class Property {
      * @return Type
      */
     public function type() {
-        $factory = new TypeFactory($this->class);
-        return $factory->fromTypeHints($this->typeHints());
+        return $this->factory->fromTypeHints($this->typeHints(), $this->class);
     }
 
     /**

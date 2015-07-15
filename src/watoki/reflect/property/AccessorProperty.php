@@ -2,7 +2,7 @@
 namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
-use watoki\reflect\type\ClassType;
+use watoki\reflect\TypeFactory;
 
 class AccessorProperty extends Property {
 
@@ -13,11 +13,12 @@ class AccessorProperty extends Property {
     private $setter;
 
     /**
+     * @param TypeFactory $factory
      * @param \ReflectionMethod $method
      */
-    public function __construct(\ReflectionMethod $method) {
+    public function __construct(TypeFactory $factory, \ReflectionMethod $method) {
         $start = substr($method->getName(), 1, 2) == 'et' ? 3 : 2;
-        parent::__construct(lcfirst(substr($method->getName(), $start)), $method->getDeclaringClass());
+        parent::__construct($factory, $method->getDeclaringClass(), lcfirst(substr($method->getName(), $start)));
 
         if (substr($method->getName(), 0, 3) == 'set') {
             $this->setter = $method;
@@ -52,16 +53,14 @@ class AccessorProperty extends Property {
 
     public function typeHints() {
         if ($this->getter) {
-            return $this->parseTypeHints('/@return\s+(\S+)/', $this->getter->getDocComment(),
-                $this->getter->getDeclaringClass());
+            return $this->parseTypeHints('/@return\s+(\S+)/', $this->getter->getDocComment());
         } else if ($this->setter) {
             $parameters = $this->setter->getParameters();
             $param = $parameters[0];
             if ($param->getClass()) {
                 return array($param->getClass()->getName());
             }
-            return $this->parseTypeHints('/@param\s+(\S+)/', $this->setter->getDocComment(),
-                $this->setter->getDeclaringClass());
+            return $this->parseTypeHints('/@param\s+(\S+)/', $this->setter->getDocComment());
         }
         return array();
     }
