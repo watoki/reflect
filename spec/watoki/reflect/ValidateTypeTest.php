@@ -6,8 +6,6 @@ use watoki\reflect\type\BooleanType;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\DoubleType;
 use watoki\reflect\type\FloatType;
-use watoki\reflect\type\IdentifierObjectType;
-use watoki\reflect\type\IdentifierType;
 use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\LongType;
 use watoki\reflect\type\MultiType;
@@ -69,16 +67,6 @@ class ValidateTypeTest extends Specification {
         $this->assertTrue($type->is(new ValidateTypeTest_Bar()));
         $this->assertFalse($type->is(new \StdClass()));
         $this->assertFalse($type->is("foo"));
-    }
-
-    function testIdentifier() {
-        $type = new IdentifierType("Foo", new StringType());
-        $this->assertTrue($type->is("foo"));
-    }
-
-    function testIdentifierObject() {
-        $type = new IdentifierObjectType("Foo", ValidateTypeTest_Foo::$CLASS);
-        $this->assertTrue($type->is(new ValidateTypeTest_Foo()));
     }
 
     function testMulti() {

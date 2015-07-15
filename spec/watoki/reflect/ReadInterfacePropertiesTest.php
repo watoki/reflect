@@ -7,8 +7,6 @@ use watoki\reflect\type\ArrayType;
 use watoki\reflect\type\ClassType;
 use watoki\reflect\type\DoubleType;
 use watoki\reflect\type\FloatType;
-use watoki\reflect\type\IdentifierObjectType;
-use watoki\reflect\type\IdentifierType;
 use watoki\reflect\type\IntegerType;
 use watoki\reflect\type\LongType;
 use watoki\reflect\type\MultiType;
@@ -213,65 +211,18 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->thenTheTypesOf_ShouldBe('merged', array(StringType::$CLASS, DoubleType::$CLASS));
     }
 
-    function testIdentifierType() {
-        $this->class->givenTheClass_WithTheBody('IdentifierType\SomeEntity', 'public static $CLASS = __CLASS__;');
-        $this->class->givenTheClass_WithTheBody('IdentifierType\SomeEntityId', 'function __toString() {}');
-        $this->class->givenTheClass_WithTheBody('IdentifierType\elsewhere\ThisId', '
-            const TARGET = "IdentifierType\SomeEntity";
-            function __toString() {}
-        ');
-        $this->class->givenTheClass_WithTheBody('IdentifierType\elsewhere\ThatId', '
-            public static function TARGET() { return \IdentifierType\SomeEntity::$CLASS; }
-            function __toString() {}
-        ');
-        $this->class->givenTheClass_WithTheBody('IdentifierType\SomeClass', '
-            /** @var string|SomeEntity-ID */
-            public $suffixed;
-
-            /** @var int|SomeEntity-Id */
-            public $caseInsensitiveSuffix;
-
-            /** @var \IdentifierType\elsewhere\ThisId */
-            public $targetConst;
-
-            /** @var \IdentifierType\elsewhere\ThatId */
-            public $targetStaticMethod;
-
-            /** @var SomeEntityId */
-            public $sameNameSpace;
-
-            /** @var array|string[]|SomeEntity-ID[] */
-            public $array;
-
-            function __construct(SomeEntityId $inConstructor = null) {}
-        ');
-
-        $this->whenIDetermineThePropertiesOf('IdentifierType\SomeClass');
-        $this->thenThereShouldBe_Properties(7);
-
-        $this->then_ShouldBeAndIdentifierFor('suffixed', 'IdentifierType\SomeEntity');
-        $this->thenThePrimitiveTypeOf_ShouldBe('suffixed', StringType::$CLASS);
-        $this->then_ShouldBeAndIdentifierFor('caseInsensitiveSuffix', 'IdentifierType\SomeEntity');
-        $this->thenThePrimitiveTypeOf_ShouldBe('caseInsensitiveSuffix', IntegerType::$CLASS);
-        $this->then_ShouldBeAnIdentifierObjectFor('targetConst', 'IdentifierType\SomeEntity');
-        $this->then_ShouldBeAnIdentifierObjectFor('targetStaticMethod', 'IdentifierType\SomeEntity');
-        $this->then_ShouldBeAnIdentifierObjectFor('sameNameSpace', 'IdentifierType\SomeEntity');
-        $this->then_ShouldBeAnIdentifierObjectFor('inConstructor', 'IdentifierType\SomeEntity');
-        $this->then_ShouldBeAnArrayOfIdentifiersFor('array', 'IdentifierType\SomeEntity');
-    }
-
     function testDeDuplicateTypes() {
         $this->class->givenTheClass_WithTheBody('deDuplicate\SomeClass', '
-            /** @var \deDuplicate\some\OtherClassId */
+            /** @var \deDuplicate\some\OtherClass */
             public $one;
-            function __construct(some\OtherClassId $one = null) {}
+            function __construct(some\OtherClass $one = null) {}
         ');
         $this->class->givenTheClass('deDuplicate\some\OtherClass');
         $this->class->givenTheClass_WithTheBody('deDuplicate\some\OtherClassId', 'function __toString() { return "foo"; }');
 
         $this->whenIDetermineThePropertiesOf('deDuplicate\SomeClass');
         $this->thenThereShouldBe_Properties(1);
-        $this->then_ShouldHaveTheType('one', IdentifierObjectType::$CLASS);
+        $this->then_ShouldHaveTheType('one', ClassType::$CLASS);
     }
 
     ##################################################################################################
@@ -378,44 +329,6 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->assertEquals($types, array_map(function ($type) {
             return get_class($type);
         }, $type->getTypes()));
-    }
-
-    private function thenTheTargetOf_ShouldBe($name, $class) {
-        $type = $this->properties[$name]->type();
-        if (!($type instanceof IdentifierType)) {
-            $this->fail("Not a IdentifierType: $name");
-        }
-        $this->assertEquals($class, $type->getTarget());
-    }
-
-    private function then_ShouldBeAndIdentifierFor($property, $target) {
-        $this->then_ShouldHaveTheType($property, IdentifierType::$CLASS);
-        $this->thenTheTargetOf_ShouldBe($property, $target);
-    }
-
-    private function thenThePrimitiveTypeOf_ShouldBe($property, $primitiveType) {
-        $type = $this->properties[$property]->type();
-        if (!($type instanceof IdentifierType)) {
-            $this->fail("Not a IdentifierType: $property");
-        }
-        $this->assertInstanceOf($primitiveType, $type->getPrimitive());
-    }
-
-    private function then_ShouldBeAnIdentifierObjectFor($property, $target) {
-        $this->then_ShouldHaveTheType($property, IdentifierObjectType::$CLASS);
-        $this->thenTheTargetOf_ShouldBe($property, $target);
-    }
-
-    private function then_ShouldBeAnArrayOfIdentifiersFor($property, $target) {
-        $arrayType = $this->properties[$property]->type();
-        if (!($arrayType instanceof ArrayType)) {
-            $this->fail("Not ArrayType");
-        }
-        $itemType = $arrayType->getItemType();
-        if (!($itemType instanceof IdentifierType)) {
-            $this->fail("Not IdentifierType: " . get_class($itemType));
-        }
-        $this->assertEquals($target, $itemType->getTarget());
     }
 
 } 

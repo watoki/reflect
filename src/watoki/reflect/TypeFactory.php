@@ -5,8 +5,6 @@ use watoki\reflect\type\UnknownType;
 
 class TypeFactory {
 
-    private static $TARGET_REFERENCE = 'TARGET';
-
     /** @var \watoki\reflect\ClassResolver */
     private $resolver;
 
@@ -37,16 +35,6 @@ class TypeFactory {
                 return str_replace('[]', '', $type);
             }, $hints);
             return new type\ArrayType($this->fromTypeHints($hints));
-        } else {
-            foreach ($hints as $hint) {
-                if (strtolower(substr($hint, -3)) == '-id') {
-                    $resolved = $this->resolver->resolve(substr($hint, 0, -3));
-                    if ($resolved) {
-                        $hints = array_values(array_diff($hints, array($hint)));
-                        return new type\IdentifierType($resolved, $this->fromTypeHints($hints));
-                    }
-                }
-            }
         }
 
         $types = array();
@@ -101,17 +89,6 @@ class TypeFactory {
 
         if (!$resolved) {
             return new type\UnknownType($hint);
-        }
-
-        if (strtolower(substr($hint, -2)) == 'id') {
-            $hint = new \ReflectionClass($resolved);
-            if ($hint->hasMethod(self::$TARGET_REFERENCE)) {
-                return new type\IdentifierObjectType($hint->getMethod(self::$TARGET_REFERENCE)->invoke(null), $resolved);
-            } else if ($hint->hasConstant(self::$TARGET_REFERENCE)) {
-                return new type\IdentifierObjectType($hint->getConstant(self::$TARGET_REFERENCE), $resolved);
-            } else if (class_exists(substr($hint->getName(), 0, -2))) {
-                return new type\IdentifierObjectType(substr($hint->getName(), 0, -2), $resolved);
-            }
         }
 
         return new type\ClassType($resolved);
