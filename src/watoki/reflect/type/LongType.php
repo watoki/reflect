@@ -8,4 +8,8 @@ class LongType extends PrimitiveType {
     public function is($value) {
         return is_long($value);
     }
+
+    public function __toString() {
+        return 'long';
+    }
 }

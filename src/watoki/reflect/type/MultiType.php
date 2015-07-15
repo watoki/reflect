@@ -32,4 +32,8 @@ class MultiType implements Type {
         }
         return false;
     }
+
+    public function __toString() {
+        return implode('|', $this->types);
+    }
 }

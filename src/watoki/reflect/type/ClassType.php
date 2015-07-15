@@ -27,4 +27,8 @@ class ClassType implements Type {
     public function is($value) {
         return is_object($value) && is_a($value, $this->class);
     }
+
+    public function __toString() {
+        return $this->class;
+    }
 }

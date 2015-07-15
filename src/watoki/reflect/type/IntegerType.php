@@ -10,4 +10,8 @@ class IntegerType extends LongType {
     public function is($value) {
         return is_int($value);
     }
+
+    public function __toString() {
+        return 'integer';
+    }
 }

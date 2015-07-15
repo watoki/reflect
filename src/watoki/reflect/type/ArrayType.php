@@ -32,4 +32,8 @@ class ArrayType implements Type {
         }
         return true;
     }
+
+    public function __toString() {
+        return $this->itemType . '[]';
+    }
 }

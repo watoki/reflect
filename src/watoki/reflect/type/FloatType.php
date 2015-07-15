@@ -10,4 +10,8 @@ class FloatType extends DoubleType {
     public function is($value) {
         return is_double($value);
     }
+
+    public function __toString() {
+        return 'float';
+    }
 }

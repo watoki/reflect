@@ -22,36 +22,48 @@ class ValidateTypeTest extends Specification {
         $this->assertTrue($type->is(true));
         $this->assertTrue($type->is(false));
         $this->assertFalse($type->is(0));
+
+        $this->assertEquals($type->__toString(), 'boolean');
     }
 
     function testDouble() {
         $type = new DoubleType();
         $this->assertTrue($type->is(0.0));
         $this->assertFalse($type->is(0));
+
+        $this->assertEquals($type->__toString(), 'double');
     }
 
     function testFloat() {
         $type = new FloatType();
         $this->assertTrue($type->is(0.0));
         $this->assertFalse($type->is(0));
+
+        $this->assertEquals($type->__toString(), 'float');
     }
 
     function testLong() {
         $type = new LongType();
         $this->assertTrue($type->is(0));
         $this->assertFalse($type->is(0.0));
+
+        $this->assertEquals($type->__toString(), 'long');
     }
 
     function testInteger() {
         $type = new IntegerType();
         $this->assertTrue($type->is(0));
         $this->assertFalse($type->is(0.0));
+
+        $this->assertEquals($type->__toString(), 'integer');
     }
 
     function testString() {
         $type = new StringType();
         $this->assertTrue($type->is("foo"));
         $this->assertFalse($type->is(0));
+
+        $this->assertEquals($type->__toString(), 'string');
     }
 
     function testArray() {
@@ -59,6 +71,8 @@ class ValidateTypeTest extends Specification {
         $this->assertTrue($type->is(array()));
         $this->assertTrue($type->is(array(true, false)));
         $this->assertFalse($type->is(array(true, 0)));
+
+        $this->assertEquals($type->__toString(), 'boolean[]');
     }
 
     function testClass() {
@@ -67,6 +81,8 @@ class ValidateTypeTest extends Specification {
         $this->assertTrue($type->is(new ValidateTypeTest_Bar()));
         $this->assertFalse($type->is(new \StdClass()));
         $this->assertFalse($type->is("foo"));
+
+        $this->assertEquals($type->__toString(), ValidateTypeTest_Foo::$CLASS);
     }
 
     function testMulti() {
@@ -74,6 +90,8 @@ class ValidateTypeTest extends Specification {
         $this->assertTrue($type->is("foo"));
         $this->assertTrue($type->is(true));
         $this->assertFalse($type->is(0));
+
+        $this->assertEquals($type->__toString(), 'string|boolean');
     }
 
     function testNullable() {
@@ -81,19 +99,25 @@ class ValidateTypeTest extends Specification {
         $this->assertTrue($type->is(null));
         $this->assertTrue($type->is("foo"));
         $this->assertFalse($type->is(0));
+
+        $this->assertEquals($type->__toString(), 'null|string');
     }
 
     function testNull() {
         $type = new NullType();
         $this->assertTrue($type->is(null));
         $this->assertFalse($type->is("foo"));
+
+        $this->assertEquals($type->__toString(), 'null');
     }
 
     function testUnknown() {
-        $type = new UnknownType();
+        $type = new UnknownType('foo bar');
         $this->assertTrue($type->is(null));
         $this->assertTrue($type->is("foo"));
         $this->assertTrue($type->is(0));
+
+        $this->assertEquals($type->__toString(), 'foo bar');
     }
 }
 

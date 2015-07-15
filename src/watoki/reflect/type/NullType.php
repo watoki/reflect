@@ -8,4 +8,8 @@ class NullType implements Type {
     public function is($value) {
         return is_null($value);
     }
+
+    public function __toString() {
+        return 'null';
+    }
 }

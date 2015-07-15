@@ -10,4 +10,8 @@ class DoubleType extends PrimitiveType {
     public function is($value) {
         return is_double($value);
     }
+
+    public function __toString() {
+        return 'double';
+    }
 }

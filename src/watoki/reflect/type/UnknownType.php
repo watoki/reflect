@@ -26,4 +26,8 @@ class UnknownType implements Type {
     public function is($value) {
         return true;
     }
+
+    public function __toString() {
+        return $this->hint;
+    }
 }

@@ -8,4 +8,8 @@ class BooleanType extends PrimitiveType {
     public function is($value) {
         return is_bool($value);
     }
+
+    public function __toString() {
+        return 'boolean';
+    }
 }

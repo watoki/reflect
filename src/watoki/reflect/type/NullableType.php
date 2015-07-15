@@ -24,4 +24,8 @@ class NullableType implements Type {
     public function is($value) {
         return is_null($value) || $this->type->is($value);
     }
+
+    public function __toString() {
+        return 'null|' . $this->type;
+    }
 }
