@@ -46,11 +46,15 @@ class ConstructorProperty extends Property {
     }
 
     public function typeHints() {
-        if ($this->parameter->getClass()) {
-            return array($this->parameter->getClass()->getName());
-        }
-
         $pattern = '/@param\s+(\S+)\s+\$' . $this->parameter->getName() . '/';
-        return $this->parseTypeHints($pattern, $this->constructor->getDocComment());
+        $hints = $this->parseTypeHints($pattern, $this->constructor->getDocComment());
+
+        if ($this->parameter->getClass()) {
+            $hints[] = $this->parameter->getClass()->getName();
+        }
+        if ($this->parameter->isDefaultValueAvailable() && is_null($this->parameter->getDefaultValue())) {
+            $hints[] = 'null';
+        }
+        return $hints;
     }
 }

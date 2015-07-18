@@ -166,6 +166,15 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->then_ShouldHaveTheType('two', ClassType::$CLASS);
     }
 
+    function testOptionalConstructorTypes() {
+        $this->class->givenTheClass_WithTheBody('optionalConstructorTypes\SomeClass', '
+            function __construct(\DateTime $one = null) {}
+        ');
+        $this->whenIDetermineThePropertiesOf('optionalConstructorTypes\SomeClass');
+        $this->thenThereShouldBe_Properties(1);
+        $this->then_ShouldHaveTheType('one', NullableType::$CLASS);
+    }
+
     function testComplexTypes() {
         $this->class->givenTheClass_WithTheBody('ComplexTypes\SomeClass', '
             /** @var null|int */
@@ -229,7 +238,7 @@ class ReadInterfacePropertiesTest extends Specification {
 
         $this->whenIDetermineThePropertiesOf('deDuplicate\SomeClass');
         $this->thenThereShouldBe_Properties(1);
-        $this->then_ShouldHaveTheType('one', ClassType::$CLASS);
+        $this->then_ShouldHaveTheType('one', NullableType::$CLASS);
     }
 
     ##################################################################################################
