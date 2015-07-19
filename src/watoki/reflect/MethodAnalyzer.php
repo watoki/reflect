@@ -85,7 +85,7 @@ class MethodAnalyzer {
      * @return Type[] indexed by parameter name
      */
     public function getTypes(TypeFactory $factory) {
-        $types = [];
+        $types = array();
         foreach ($this->method->getParameters() as $parameter) {
             $types[$parameter->getName()] = $this->getType($parameter, $factory);
         }

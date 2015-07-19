@@ -13,15 +13,15 @@ class MethodAnalyzerTest extends Specification {
 
     function testGetType() {
         $first = new MethodAnalyzer(new \ReflectionMethod(MethodAnalyzerTest_Foo::$CLASS, 'first'));
-        $this->assertEquals($first->getTypes(new TypeFactory()), [
+        $this->assertEquals($first->getTypes(new TypeFactory()), array(
             'one' => new UnknownType()
-        ]);
+        ));
 
         $second = new MethodAnalyzer(new \ReflectionMethod(MethodAnalyzerTest_Foo::$CLASS, 'second'));
-        $this->assertEquals($second->getTypes(new TypeFactory()), [
+        $this->assertEquals($second->getTypes(new TypeFactory()), array(
             'one' => new StringType(),
             'two' => new NullableType(new ClassType('DateTime')),
-        ]);
+        ));
     }
 }
 
