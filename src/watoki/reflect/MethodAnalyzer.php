@@ -80,6 +80,32 @@ class MethodAnalyzer {
         return call_user_func($argumentsFilter, $param);
     }
 
+    /**
+     * @param TypeFactory $factory
+     * @return Type[] indexed by parameter name
+     */
+    public function getTypes(TypeFactory $factory) {
+        $types = [];
+        foreach ($this->method->getParameters() as $parameter) {
+            $types[$parameter->getName()] = $this->getType($parameter, $factory);
+        }
+        return $types;
+    }
+
+    /**
+     * @param \ReflectionParameter $param
+     * @param TypeFactory $types
+     * @return Type
+     */
+    public function getType(\ReflectionParameter $param, TypeFactory $types) {
+        $hints = array_map('trim', explode('|', $this->getTypeHint($param)));
+        return $types->fromTypeHints($hints, $param->getDeclaringClass());
+    }
+
+    /**
+     * @param \ReflectionParameter $param
+     * @return null|string
+     */
     public function getTypeHint(\ReflectionParameter $param) {
         if ($param->getClass()) {
             return $param->getClass()->getName();
