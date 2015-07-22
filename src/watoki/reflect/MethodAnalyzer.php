@@ -1,6 +1,8 @@
 <?php
 namespace watoki\reflect;
 
+use watoki\reflect\type\NullableType;
+
 class MethodAnalyzer {
 
     private $method;
@@ -99,7 +101,11 @@ class MethodAnalyzer {
      */
     public function getType(\ReflectionParameter $param, TypeFactory $types) {
         $hints = array_map('trim', explode('|', $this->getTypeHint($param)));
-        return $types->fromTypeHints($hints, $param->getDeclaringClass());
+        $type = $types->fromTypeHints($hints, $param->getDeclaringClass());
+        if (!($type instanceof NullableType) && $param->isDefaultValueAvailable() && is_null($param->getDefaultValue())) {
+            $type = new NullableType($type);
+        }
+        return $type;
     }
 
     /**
