@@ -4,6 +4,7 @@ namespace watoki\reflect\property;
 use watoki\reflect\Property;
 use watoki\reflect\Type;
 use watoki\reflect\type\MultiType;
+use watoki\reflect\type\UnknownType;
 use watoki\reflect\TypeFactory;
 
 class MultiProperty extends BaseProperty {
@@ -79,7 +80,12 @@ class MultiProperty extends BaseProperty {
     public function type() {
         $types = array();
         foreach ($this->properties as $property) {
-            $types[] = $property->type();
+            if (!($property->type() instanceof UnknownType)) {
+                $types[] = $property->type();
+            }
+        }
+        if (!$types) {
+            return new UnknownType();
         }
         $types = array_unique($types);
         if (count($types) == 1) {

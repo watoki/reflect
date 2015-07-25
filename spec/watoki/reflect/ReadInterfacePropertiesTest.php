@@ -232,14 +232,27 @@ class ReadInterfacePropertiesTest extends Specification {
             /** @var \deDuplicate\some\OtherClass|null */
             public $one;
             function __construct(some\OtherClass $one = null) {}
+            function getOne() {}
+
+            function getUnknown() {}
+            function setUnknown($u) {}
+
+            /** @return string */
+            function getNullable() {}
+            /** @param string $s */
+            function setNullable($s = null) {}
         ');
         $this->class->givenTheClass('deDuplicate\some\OtherClass');
         $this->class->givenTheClass_WithTheBody('deDuplicate\some\OtherClassId', 'function __toString() { return "foo"; }');
 
         $this->whenIDetermineThePropertiesOf('deDuplicate\SomeClass');
-        $this->thenThereShouldBe_Properties(1);
+        $this->thenThereShouldBe_Properties(3);
         $this->then_ShouldHaveTheType('one', NullableType::$CLASS);
         $this->thenTheInnerTypeOf_ShouldBe('one', ClassType::$CLASS);
+
+        $this->then_ShouldHaveTheType('unknown', UnknownType::$CLASS);
+
+        $this->then_ShouldHaveTheType('nullable', MultiType::$CLASS);
     }
 
     function testDocComment() {
