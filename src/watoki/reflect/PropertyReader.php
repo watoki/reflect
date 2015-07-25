@@ -2,6 +2,7 @@
 namespace watoki\reflect;
 
 use watoki\collections\Map;
+use watoki\reflect\property\BaseProperty;
 
 class PropertyReader {
 
@@ -36,8 +37,10 @@ class PropertyReader {
             }
         }
 
+        $declaredProperties = [];
         foreach ($this->class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             if (!$property->isStatic()) {
+                $declaredProperties[] = $property->name;
                 $this->accumulate($properties,
                     new property\InstanceVariableProperty($this->factory, $property));
             }
@@ -45,8 +48,10 @@ class PropertyReader {
 
         if (is_object($object)) {
             foreach ($object as $name => $value) {
-                $this->accumulate($properties,
-                    new property\DynamicProperty($this->factory, new \ReflectionClass($object), $name));
+                if (!in_array($name, $declaredProperties)) {
+                    $this->accumulate($properties,
+                        new property\DynamicProperty($this->factory, new \ReflectionClass($object), $name));
+                }
             }
         }
 
@@ -84,7 +89,7 @@ class PropertyReader {
         return $properties;
     }
 
-    private function accumulate(Map $acc, Property $property) {
+    private function accumulate(Map $acc, BaseProperty $property) {
         if (!$acc->has($property->name())) {
             $acc->set($property->name(), $property);
         } else {

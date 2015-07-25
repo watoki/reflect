@@ -100,12 +100,15 @@ class MethodAnalyzer {
      * @return Type
      */
     public function getType(\ReflectionParameter $param, TypeFactory $types) {
-        $hints = array_map('trim', explode('|', $this->getTypeHint($param)));
-        $type = $types->fromTypeHints($hints, $param->getDeclaringClass());
+        $type = $types->fromString($this->getTypeHint($param), $param->getDeclaringClass());
         if (!($type instanceof NullableType) && $param->isDefaultValueAvailable() && is_null($param->getDefaultValue())) {
             $type = new NullableType($type);
         }
         return $type;
+    }
+
+    public function getReturnType(TypeFactory $types) {
+        return $types->fromString($this->match('/@return\s+(\S+)/'), $this->method->getDeclaringClass());
     }
 
     /**
@@ -117,14 +120,10 @@ class MethodAnalyzer {
             return $param->getClass()->getName();
         }
 
-        $matches = array();
-        $pattern = '/@param\s+(\S+)\s+\$' . $param->getName() . '/';
-        $found = preg_match($pattern, $this->method->getDocComment(), $matches);
-
-        if (!$found) {
+        $type = $this->match('/@param\s+(\S+)\s+\$' . $param->getName() . '/');
+        if (!$type) {
             return null;
         }
-        $type = $matches[1];
 
         $resolver = new ClassResolver($this->method->getDeclaringClass());
         $resolved = $resolver->resolve($type);
@@ -148,14 +147,11 @@ class MethodAnalyzer {
      * @return null|string
      */
     public function getComment(\ReflectionParameter $param) {
-        $matches = array();
-        $pattern = '/@param[^$]+\$' . $param->getName() . '(.*?)\n/';
-        $found = preg_match($pattern, $this->method->getDocComment(), $matches);
+        return trim($this->match('/@param[^$]+\$' . $param->getName() . '(.*?)\n/'));
+    }
 
-        if (!$found) {
-            return null;
-        }
-        return trim($matches[1]);
+    public function getReturnComment() {
+        return trim($this->match('/@return\s+\S+([^*]+)/'));
     }
 
     /**
@@ -176,6 +172,15 @@ class MethodAnalyzer {
 
     private function hasValue(\ReflectionParameter $param, array $args) {
         return array_key_exists($param->getName(), $args) || array_key_exists($param->getPosition(), $args);
+    }
+
+    private function match($pattern) {
+        $matches = array();
+        $found = preg_match($pattern, $this->method->getDocComment(), $matches);
+        if (!$found) {
+            return null;
+        }
+        return $matches[1];
     }
 
 }

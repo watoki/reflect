@@ -2,17 +2,18 @@
 namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
+use watoki\reflect\Type;
+use watoki\reflect\type\MultiType;
 use watoki\reflect\TypeFactory;
 
-class MultiProperty extends Property {
+class MultiProperty extends BaseProperty {
 
     /** @var array|Property[] */
     private $properties = array();
 
-    public function __construct(TypeFactory $factory, Property $base) {
+    public function __construct(TypeFactory $factory, BaseProperty $base) {
         parent::__construct($factory, $base->class, $base->name());
     }
-
 
     public function isRequired() {
         foreach ($this->properties as $property) {
@@ -72,20 +73,27 @@ class MultiProperty extends Property {
         $this->properties[] = $property;
     }
 
-    public function typeHints() {
+    /**
+     * @return Type
+     */
+    public function type() {
         $types = array();
         foreach ($this->properties as $property) {
-            $types = array_merge($types, $property->typeHints());
+            $types[] = $property->type();
         }
-        return array_unique($types);
+        $types = array_unique($types);
+        if (count($types) == 1) {
+            return $types[0];
+        }
+        return new MultiType($types);
     }
 
     /**
      * @return string|null
      */
-    public function getComment() {
+    public function comment() {
         foreach ($this->properties as $property) {
-            $comment = $property->getComment();
+            $comment = $property->comment();
             if ($comment) {
                 return $comment;
             }

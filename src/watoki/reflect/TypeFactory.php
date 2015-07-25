@@ -6,13 +6,22 @@ use watoki\reflect\type\UnknownType;
 class TypeFactory {
 
     /**
+     * @param null|string $hintString
+     * @param \ReflectionClass $class
+     * @return Type
+     */
+    public function fromString($hintString, \ReflectionClass $class) {
+        return $this->fromTypeHints(explode('|', $hintString), $class);
+    }
+
+    /**
      * @param array|string[] $hints
      * @param \ReflectionClass $class
      * @return Type
      */
     public function fromTypeHints(array $hints, \ReflectionClass $class) {
         if (!$hints) {
-            return new type\UnknownType('');
+            return new type\UnknownType();
         }
 
         if (in_array('null', $hints)) {

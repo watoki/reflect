@@ -2,9 +2,10 @@
 namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
+use watoki\reflect\Type;
 use watoki\reflect\TypeFactory;
 
-class InstanceVariableProperty extends Property {
+class InstanceVariableProperty extends BaseProperty {
 
     /** @var \ReflectionProperty */
     private $property;
@@ -43,22 +44,31 @@ class InstanceVariableProperty extends Property {
         return null;
     }
 
-    public function typeHints() {
-        return $this->parseTypeHints('/@var\s+(\S+).*/', $this->property->getDocComment());
+    /**
+     * @return Type
+     */
+    public function type() {
+        return $this->types->fromString($this->match('/@var\s+(\S+).*/'), $this->class);
     }
 
     /**
      * @return string|null
      */
-    public function getComment() {
-        $matches = array();
+    public function comment() {
         $pattern = '/@var\s+\S+([^*]*)/';
-        $docComment = $this->property->getDocComment();
-        $found = preg_match($pattern, $docComment, $matches);
+        return trim($this->match($pattern));
+    }
 
+    /**
+     * @param $pattern
+     * @return null|string
+     */
+    private function match($pattern) {
+        $matches = array();
+        $found = preg_match($pattern, $this->property->getDocComment(), $matches);
         if (!$found) {
             return null;
         }
-        return trim($matches[1]);
+        return $matches[1];
     }
 }

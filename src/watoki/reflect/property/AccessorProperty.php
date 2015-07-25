@@ -3,9 +3,11 @@ namespace watoki\reflect\property;
 
 use watoki\reflect\MethodAnalyzer;
 use watoki\reflect\Property;
+use watoki\reflect\Type;
+use watoki\reflect\type\UnknownType;
 use watoki\reflect\TypeFactory;
 
-class AccessorProperty extends Property {
+class AccessorProperty extends BaseProperty {
 
     /** @var \ReflectionMethod|null */
     private $getter;
@@ -18,7 +20,7 @@ class AccessorProperty extends Property {
      * @param \ReflectionMethod $method
      */
     public function __construct(TypeFactory $factory, \ReflectionMethod $method) {
-        $start = substr($method->getName(), 1, 2) == 'et' ? 3 : 2;
+        $start = substr($method->getName(), 0, 2) == 'is' ? 2 : 3;
         parent::__construct($factory, $method->getDeclaringClass(), lcfirst(substr($method->getName(), $start)));
 
         if (substr($method->getName(), 0, 3) == 'set') {
@@ -52,30 +54,28 @@ class AccessorProperty extends Property {
         return !!$this->setter;
     }
 
-    public function typeHints() {
+    /**
+     * @return Type
+     */
+    public function type() {
         if ($this->getter) {
-            return $this->parseTypeHints('/@return\s+(\S+)/', $this->getter->getDocComment());
+            $analyzer = new MethodAnalyzer($this->getter);
+            return $analyzer->getReturnType($this->types);
         } else if ($this->setter) {
-            $parameters = $this->setter->getParameters();
-            $param = $parameters[0];
-            if ($param->getClass()) {
-                return array($param->getClass()->getName());
-            }
-            return $this->parseTypeHints('/@param\s+(\S+)/', $this->setter->getDocComment());
+            $analyzer = new MethodAnalyzer($this->setter);
+            $types = array_values($analyzer->getTypes($this->types));
+            return $types[0];
         }
-        return array();
+        return new UnknownType();
     }
 
     /**
      * @return string|null
      */
-    public function getComment() {
+    public function comment() {
         if ($this->getter) {
-            $matches = array();
-            $found = preg_match('/@return\s+\S+([^*]+)/', $this->getter->getDocComment(), $matches);
-            if ($found) {
-                return trim($matches[1]);
-            }
+            $analyzer = new MethodAnalyzer($this->getter);
+            return $analyzer->getReturnComment();
         } else if ($this->setter) {
             $analyzer = new MethodAnalyzer($this->setter);
             $comments = array_values($analyzer->getComments());

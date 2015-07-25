@@ -6,7 +6,7 @@ use watoki\reflect\Property;
 use watoki\reflect\Type;
 use watoki\reflect\TypeFactory;
 
-class ConstructorProperty extends Property {
+class ConstructorProperty extends BaseProperty {
 
     /** @var \ReflectionMethod */
     private $constructor;
@@ -47,23 +47,18 @@ class ConstructorProperty extends Property {
         return $this->parameter->isDefaultValueAvailable() ? $this->parameter->getDefaultValue() : null;
     }
 
-    public function typeHints() {
-        $pattern = '/@param\s+(\S+)\s+\$' . $this->parameter->getName() . '/';
-        $hints = $this->parseTypeHints($pattern, $this->constructor->getDocComment());
-
-        if ($this->parameter->getClass()) {
-            $hints[] = $this->parameter->getClass()->getName();
-        }
-        if ($this->parameter->isDefaultValueAvailable() && is_null($this->parameter->getDefaultValue())) {
-            $hints[] = 'null';
-        }
-        return $hints;
+    /**
+     * @return Type
+     */
+    public function type() {
+        $analyzer = new MethodAnalyzer($this->constructor);
+        return $analyzer->getType($this->parameter, $this->types);
     }
 
     /**
      * @return string|null
      */
-    public function getComment() {
+    public function comment() {
         $analyzer = new MethodAnalyzer($this->constructor);
         return $analyzer->getComment($this->parameter);
     }

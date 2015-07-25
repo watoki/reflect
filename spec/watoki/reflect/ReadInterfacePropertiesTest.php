@@ -229,7 +229,7 @@ class ReadInterfacePropertiesTest extends Specification {
 
     function testDeDuplicateTypes() {
         $this->class->givenTheClass_WithTheBody('deDuplicate\SomeClass', '
-            /** @var \deDuplicate\some\OtherClass */
+            /** @var \deDuplicate\some\OtherClass|null */
             public $one;
             function __construct(some\OtherClass $one = null) {}
         ');
@@ -239,6 +239,7 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->whenIDetermineThePropertiesOf('deDuplicate\SomeClass');
         $this->thenThereShouldBe_Properties(1);
         $this->then_ShouldHaveTheType('one', NullableType::$CLASS);
+        $this->thenTheInnerTypeOf_ShouldBe('one', ClassType::$CLASS);
     }
 
     function testDocComment() {
@@ -340,7 +341,7 @@ class ReadInterfacePropertiesTest extends Specification {
     }
 
     private function then_ShouldHaveTheComment($name, $comment) {
-        $this->assertEquals($this->properties[$name]->getComment(), $comment);
+        $this->assertEquals($this->properties[$name]->comment(), $comment);
     }
 
     private function then_ShouldHaveTheType($name, $type) {

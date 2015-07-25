@@ -2,12 +2,10 @@
 namespace watoki\reflect\property;
 
 use watoki\reflect\Property;
+use watoki\reflect\Type;
+use watoki\reflect\type\UnknownType;
 
-class DynamicProperty extends Property {
-
-    public function typeHints() {
-        return array();
-    }
+class DynamicProperty extends BaseProperty {
 
     public function canGet() {
         return true;
@@ -27,10 +25,11 @@ class DynamicProperty extends Property {
         $object->$name = $value;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getComment() {
+    public function comment() {
         return null;
+    }
+
+    public function type() {
+        return new UnknownType();
     }
 }
