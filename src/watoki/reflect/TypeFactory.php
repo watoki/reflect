@@ -11,6 +11,9 @@ class TypeFactory {
      * @return Type
      */
     public function fromString($hintString, \ReflectionClass $class) {
+        if (!$hintString) {
+            return new UnknownType();
+        }
         return $this->fromTypeHints(explode('|', $hintString), $class);
     }
 
