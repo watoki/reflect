@@ -37,7 +37,7 @@ class PropertyReader {
             }
         }
 
-        $declaredProperties = [];
+        $declaredProperties = array();
         foreach ($this->class->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             if (!$property->isStatic()) {
                 $declaredProperties[] = $property->name;
