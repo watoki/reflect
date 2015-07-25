@@ -133,6 +133,32 @@ class MethodAnalyzer {
     }
 
     /**
+     * @return array|string[] indexed by parameter name
+     */
+    public function getComments() {
+        $types = array();
+        foreach ($this->method->getParameters() as $parameter) {
+            $types[$parameter->getName()] = $this->getComment($parameter);
+        }
+        return $types;
+    }
+
+    /**
+     * @param \ReflectionParameter $param
+     * @return null|string
+     */
+    public function getComment(\ReflectionParameter $param) {
+        $matches = array();
+        $pattern = '/@param[^$]+\$' . $param->getName() . '(.*?)\n/';
+        $found = preg_match($pattern, $this->method->getDocComment(), $matches);
+
+        if (!$found) {
+            return null;
+        }
+        return trim($matches[1]);
+    }
+
+    /**
      * @param \ReflectionParameter $param
      * @param array $args
      * @throws \Exception

@@ -79,4 +79,17 @@ class MultiProperty extends Property {
         }
         return array_unique($types);
     }
+
+    /**
+     * @return string|null
+     */
+    public function getComment() {
+        foreach ($this->properties as $property) {
+            $comment = $property->getComment();
+            if ($comment) {
+                return $comment;
+            }
+        }
+        return null;
+    }
 }

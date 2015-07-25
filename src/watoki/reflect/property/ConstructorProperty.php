@@ -1,7 +1,9 @@
 <?php
 namespace watoki\reflect\property;
 
+use watoki\reflect\MethodAnalyzer;
 use watoki\reflect\Property;
+use watoki\reflect\Type;
 use watoki\reflect\TypeFactory;
 
 class ConstructorProperty extends Property {
@@ -56,5 +58,13 @@ class ConstructorProperty extends Property {
             $hints[] = 'null';
         }
         return $hints;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getComment() {
+        $analyzer = new MethodAnalyzer($this->constructor);
+        return $analyzer->getComment($this->parameter);
     }
 }

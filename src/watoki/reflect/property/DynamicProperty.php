@@ -26,4 +26,11 @@ class DynamicProperty extends Property {
         $name = $this->name();
         $object->$name = $value;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getComment() {
+        return null;
+    }
 }

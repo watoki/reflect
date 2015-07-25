@@ -35,6 +35,14 @@ class MethodAnalyzerTest extends Specification {
             'three' => new NullableType(new ClassType('DateTime')),
         ));
     }
+
+    function testReadComment() {
+        $method = new MethodAnalyzer(new \ReflectionMethod(MethodAnalyzerTest_Foo::$CLASS, 'fourth'));
+        $this->assertEquals($method->getComments(), array(
+            'one' => null,
+            'two' => 'With Comment'
+        ));
+    }
 }
 
 class MethodAnalyzerTest_Foo {
@@ -53,4 +61,10 @@ class MethodAnalyzerTest_Foo {
      * @param \DateTime|null $three
      */
     function third(/** @noinspection PhpDocSignatureInspection */ $one = null, $two = null, \DateTime $three = null) {}
+
+    /**
+     * @param string $one
+     * @param string $two With Comment
+     */
+    function fourth($one, $two) {}
 }

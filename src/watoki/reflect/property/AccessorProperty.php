@@ -1,6 +1,7 @@
 <?php
 namespace watoki\reflect\property;
 
+use watoki\reflect\MethodAnalyzer;
 use watoki\reflect\Property;
 use watoki\reflect\TypeFactory;
 
@@ -63,5 +64,23 @@ class AccessorProperty extends Property {
             return $this->parseTypeHints('/@param\s+(\S+)/', $this->setter->getDocComment());
         }
         return array();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getComment() {
+        if ($this->getter) {
+            $matches = array();
+            $found = preg_match('/@return\s+\S+([^*]+)/', $this->getter->getDocComment(), $matches);
+            if ($found) {
+                return trim($matches[1]);
+            }
+        } else if ($this->setter) {
+            $analyzer = new MethodAnalyzer($this->setter);
+            $comments = array_values($analyzer->getComments());
+            return $comments[0];
+        }
+        return null;
     }
 }

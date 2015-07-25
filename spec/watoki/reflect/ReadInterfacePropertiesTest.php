@@ -241,6 +241,48 @@ class ReadInterfacePropertiesTest extends Specification {
         $this->then_ShouldHaveTheType('one', NullableType::$CLASS);
     }
 
+    function testDocComment() {
+        $this->class->givenTheClass_WithTheBody('docComments\SomeClass', '
+            /**
+             * @var string Some comment
+             */
+            public $public;
+
+            /**
+             * @param string $one Comment One
+             * @param string $two Comment Two
+             */
+            function __construct($one, $two) {}
+
+            /**
+             * @return string A comment as well
+             */
+            function getGetter() {}
+
+            /**
+             * @param $g Ignored
+             */
+            function setGetter($g) {}
+
+            /**
+             * @param $a And this too
+             */
+            function setSetter($a) {}
+        ');
+
+        $this->givenTheConstructorArgument_Is('one', '1');
+        $this->givenTheConstructorArgument_Is('two', '2');
+
+        $this->whenIDetermineThePropertiesOf('docComments\SomeClass');
+        $this->thenThereShouldBe_Properties(5);
+
+        $this->then_ShouldHaveTheComment('public', "Some comment");
+        $this->then_ShouldHaveTheComment('one', "Comment One");
+        $this->then_ShouldHaveTheComment('two', "Comment Two");
+        $this->then_ShouldHaveTheComment('getter', "A comment as well");
+        $this->then_ShouldHaveTheComment('setter', "And this too");
+    }
+
     ##################################################################################################
 
     private $args = array();
@@ -295,6 +337,10 @@ class ReadInterfacePropertiesTest extends Specification {
 
     private function then_ShouldBeOptional($name) {
         $this->assertFalse($this->properties[$name]->isRequired(), "$name should be optional");
+    }
+
+    private function then_ShouldHaveTheComment($name, $comment) {
+        $this->assertEquals($this->properties[$name]->getComment(), $comment);
     }
 
     private function then_ShouldHaveTheType($name, $type) {

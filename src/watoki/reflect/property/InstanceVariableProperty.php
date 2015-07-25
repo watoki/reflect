@@ -46,4 +46,19 @@ class InstanceVariableProperty extends Property {
     public function typeHints() {
         return $this->parseTypeHints('/@var\s+(\S+).*/', $this->property->getDocComment());
     }
+
+    /**
+     * @return string|null
+     */
+    public function getComment() {
+        $matches = array();
+        $pattern = '/@var\s+\S+([^*]*)/';
+        $docComment = $this->property->getDocComment();
+        $found = preg_match($pattern, $docComment, $matches);
+
+        if (!$found) {
+            return null;
+        }
+        return trim($matches[1]);
+    }
 }

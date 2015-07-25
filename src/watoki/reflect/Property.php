@@ -2,7 +2,9 @@
 namespace watoki\reflect;
 
 abstract class Property {
-    private $factory;
+
+    /** @var TypeFactory */
+    protected $factory;
 
     /** @var string */
     private $name;
@@ -76,6 +78,11 @@ abstract class Property {
      * @return array|string[] unresolved type hints
      */
     abstract protected function typeHints();
+
+    /**
+     * @return string|null
+     */
+    abstract public function getComment();
 
     /**
      * @param $pattern
