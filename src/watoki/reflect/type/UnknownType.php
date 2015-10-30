@@ -28,6 +28,6 @@ class UnknownType implements Type {
     }
 
     public function __toString() {
-        return (string)$this->hint;
+        return (string)$this->hint ?: 'mixed';
     }
 }

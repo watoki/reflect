@@ -119,6 +119,15 @@ class ValidateTypeTest extends Specification {
 
         $this->assertEquals($type->__toString(), 'foo bar');
     }
+
+    function testUnknwonUnknown() {
+        $type = new UnknownType();
+        $this->assertTrue($type->is(null));
+        $this->assertTrue($type->is("foo"));
+        $this->assertTrue($type->is(0));
+
+        $this->assertEquals($type->__toString(), 'mixed');
+    }
 }
 
 class ValidateTypeTest_Foo {
