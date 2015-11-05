@@ -77,13 +77,18 @@ class PropertyReader {
                 | \ReflectionProperty::IS_PUBLIC;
         }
 
-        foreach ($this->class->getProperties($filter) as $property) {
-            if ($property->isStatic()) {
-                continue;
+        $class = $this->class;
+        while ($class) {
+            foreach ($class->getProperties($filter) as $property) {
+                if ($property->isStatic()) {
+                    continue;
+                }
+
+                $this->accumulate($properties,
+                    new property\InstanceVariableProperty($this->factory, $property));
             }
 
-            $this->accumulate($properties,
-                new property\InstanceVariableProperty($this->factory, $property));
+            $class = $class->getParentClass();
         }
 
         return $properties;

@@ -2,6 +2,9 @@
 namespace spec\watoki\reflect;
 
 use watoki\reflect\PropertyReader;
+use watoki\reflect\type\IntegerType;
+use watoki\reflect\type\MultiType;
+use watoki\reflect\type\StringType;
 use watoki\reflect\TypeFactory;
 use watoki\scrut\Specification;
 
@@ -41,6 +44,31 @@ class ReadStatePropertiesTest extends Specification {
 
         $this->whenISet_To('private', 'not so private');
         $this->thenTheValueOfProperty_ShouldBe('private', 'not so private');
+    }
+
+    function testIncludePropertiesOfParentClasses() {
+        $this->class->givenTheClass_WithTheBody('parentProperties\GreatParentClass', '
+            /** @var string */
+            private $one;
+            /** @var string */
+            protected $two;
+            /** @var string */
+            public $three;
+        ');
+        $this->class->givenTheClass_Extending_WithTheBody('parentProperties\ParentClass', 'GreatParentClass', '
+            /** @var string */
+            private $four;
+        ');
+        $this->class->givenTheClass_Extending_WithTheBody('parentProperties\ChildClass', 'ParentClass', '
+            /** @var int */
+            protected $two;
+            /** @var string */
+            private $five;
+        ');
+
+        $this->whenIReadTheStatePropertiesOf('parentProperties\ChildClass');
+        $this->thenThePropertiesShouldBe(array('two', 'five', 'three', 'four', 'one'));
+        $this->thenTheTypeOf_ShouldBe('two', new MultiType([new IntegerType(), new StringType()]));
     }
 
     function testUseFilterToIgnorePrivateProperties() {
@@ -84,6 +112,10 @@ class ReadStatePropertiesTest extends Specification {
 
     private function thenThePropertiesShouldBe($array) {
         $this->assertEquals($array, $this->properties->keys()->toArray());
+    }
+
+    private function thenTheTypeOf_ShouldBe($property, $type) {
+        $this->assertEquals($this->properties[$property]->type(), $type);
     }
 
 } 
