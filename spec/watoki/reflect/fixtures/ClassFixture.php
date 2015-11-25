@@ -10,6 +10,14 @@ class ClassFixture extends Fixture {
     }
 
     public function givenTheClass_WithTheBody($fqn, $body, $abstract = false) {
+        $this->givenThe__WithTheBody('class', $fqn, $body, $abstract);
+    }
+
+    public function givenTheInterface_WithTheBody($fqn, $body, $abstract = false) {
+        $this->givenThe__WithTheBody('interface', $fqn, $body, $abstract);
+    }
+
+    public function givenThe__WithTheBody($type, $fqn, $body, $abstract = false) {
         $parts = explode('\\', $fqn);
         $name = array_pop($parts);
         $namespace = implode('\\', $parts);
@@ -21,7 +29,7 @@ class ClassFixture extends Fixture {
         $namespaceString = $namespace ? "namespace $namespace;" : '';
         $abstract = $abstract ? 'abstract' : '';
 
-        $this->evalCode("$namespaceString $abstract class $name {
+        $this->evalCode("$namespaceString $abstract $type $name {
             $body
         }");
     }
