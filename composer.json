@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.8",
+        "php": ">=5.4",
         "watoki/collections": "*",
         "nikic/php-parser": "1.*"
     },
